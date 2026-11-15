@@ -1,10 +1,22 @@
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import { Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
 import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Sparks, Star } from '../components/Doodles'
 import { articles, formatDate, motions, resources, weeklyPrompt } from '../data/sample'
+
+/** Section number sitting in the notebook margin (desktop only). */
+function MarginNo({ n, label }: { n: string; label: string }) {
+  return (
+    <div className="margin-no" aria-hidden="true">
+      <Doodle className="block">
+        <span className="numeral block text-5xl">{n}</span>
+      </Doodle>
+      <span className="label mt-2 block !text-[0.625rem]">{label}</span>
+    </div>
+  )
+}
 
 export default function HomeView() {
   const { user } = useSession()
@@ -91,150 +103,179 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* ---------- LEAD STORY ---------- */}
-      <section className="wrap mt-14 md:mt-20" aria-labelledby="lead-h">
-        <Reveal>
-          <SectionHead
-            symbol="hand"
-            title="The latest essay"
-            purpose="One argument, made carefully."
-            action={
-              <Link to="/articles" className="meta hidden whitespace-nowrap hover:text-oxblood sm:block">
-                All articles ⟶
-              </Link>
-            }
-          />
-          <Link to={`/articles/${lead.slug}`} className="group card relative block p-6 md:p-9">
-            <Doodle className="absolute top-6 right-7 hidden text-ink md:block" delay={0.3}>
-              <Pen size={72} />
-            </Doodle>
-            <StampIn>
-              <Stamp>Latest Ramz</Stamp>
-            </StampIn>
-            <p className="measure mt-4 font-display text-lg text-oxblood italic md:text-xl">
-              <Sym name="hand" className="mr-2 not-italic" />
-              {lead.ramz}
-            </p>
-            <h3 id="lead-h" className="mt-5 text-3xl font-bold md:text-[2.5rem]">
-              <span className="misreg" data-text={lead.title}>
-                {lead.title}
-              </span>
-            </h3>
-            <p className="measure mt-3 text-charcoal">{lead.excerpt}</p>
-            <p className="meta mt-5">
-              By {lead.authorName} · {formatDate(lead.date)} · {lead.readMins} min read · {lead.category}
-            </p>
-          </Link>
-        </Reveal>
-      </section>
-
-      {/* ---------- NEWEST MOTIONS + RESOURCES ---------- */}
-      <section className="wrap mt-14 grid gap-12 md:mt-20 lg:grid-cols-2">
-        <Reveal>
-          <SectionHead symbol="pilcrow" title="Newest motions" purpose="Fresh topics to practise on." />
-          <ul>
-            {motions.slice(0, 3).map((m) => (
-              <li key={m.slug} className="border-b border-border-warm">
-                <Link to="/motions" className="group row py-4">
-                  <Sym name="hand" className="row-hand text-lg" />
-                  <div className="row-body">
-                  <p className="font-display text-lg leading-snug font-bold">
-                    <span className="misreg" data-text={m.text}>
-                      {m.text}
+      <div className="wrap">
+        <div className="ledger mt-14 pb-4 md:mt-20">
+          {/* ---------- 01 · LEAD ESSAY: a book with a spine ---------- */}
+          <section className="ledger-row" aria-labelledby="lead-h">
+            <MarginNo n="01" label="Essay" />
+            <Reveal>
+              <SectionHead
+                symbol="hand"
+                title="The latest essay"
+                purpose="One argument, made carefully."
+                action={
+                  <Link to="/articles" className="meta hidden whitespace-nowrap hover:text-oxblood sm:block">
+                    All articles <span className="arrow">⟶</span>
+                  </Link>
+                }
+              />
+              <div className="relative md:pr-10">
+                <Link to={`/articles/${lead.slug}`} className="group card flex flex-col md:flex-row">
+                  <span className="flex shrink-0 items-center justify-between bg-oxblood px-5 py-2 text-ivory md:w-14 md:flex-col md:px-0 md:py-5">
+                    <span className="font-mono text-xs tracking-[0.2em] uppercase md:rotate-180 md:whitespace-nowrap md:[writing-mode:vertical-rl]">Ramz-e-Fikr · Essays</span>
+                    <Sym name="fe" tone="inherit" className="text-xl text-gold" />
+                  </span>
+                  <span className="block p-6 md:p-9 md:pr-64">
+                    <h3 id="lead-h" className="text-3xl font-bold md:text-[2.5rem]">
+                      <span className="misreg" data-text={lead.title}>
+                        {lead.title}
+                      </span>
+                    </h3>
+                    <span className="measure mt-3 block text-charcoal">{lead.excerpt}</span>
+                    <span className="meta mt-5 block">
+                      By {lead.authorName} · {formatDate(lead.date)} · {lead.readMins} min read · {lead.category}
                     </span>
-                  </p>
-                  <p className="meta mt-1.5">
-                    {m.format} · {m.theme} · {formatDate(m.date)}
-                  </p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Link to="/motions" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-            All motions <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
-          </Link>
-        </Reveal>
-
-        <Reveal>
-          <SectionHead
-            symbol="section"
-            title="Newest resources"
-            purpose="Guides and casefiles to prepare with."
-            action={
-              <Doodle className="hidden w-44 text-ink sm:block" delay={0.25}>
-                <BookStack labels={['Guides', 'Casefiles', 'Worksheets']} />
-              </Doodle>
-            }
-          />
-          <ul>
-            {resources.slice(0, 3).map((r) => (
-              <li key={r.slug} className="border-b border-border-warm">
-                <Link to="/resources" className="group row py-4">
-                  <Sym name="hand" className="row-hand text-lg" />
-                  <div className="row-body">
-                  <p className="font-display text-lg leading-snug font-bold">
-                    <span className="misreg" data-text={r.title}>
-                      {r.title}
+                    <span className="mt-5 inline-flex min-h-11 items-center font-bold text-oxblood">
+                      Read the essay <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
                     </span>
-                  </p>
-                  <p className="mt-1 text-[0.9375rem] text-charcoal">{r.summary}</p>
-                  <p className="meta mt-1.5">
-                    {r.kind} · {formatDate(r.date)}
-                  </p>
-                  </div>
+                  </span>
                 </Link>
-              </li>
-            ))}
-          </ul>
-          <Link to="/resources" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-            All resources <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
-          </Link>
-        </Reveal>
-      </section>
 
-      <div className="wrap mt-14 md:mt-20">
-        <Divider />
-      </div>
-
-      {/* ---------- THE FLOOR TEASER ---------- */}
-      <section className="wrap mt-14 md:mt-20" aria-labelledby="floor-h">
-        <Reveal>
-          <div className="relative bg-oxblood px-6 py-10 text-ivory md:px-12 md:py-14">
-            <div className="pointer-events-none absolute inset-2 border border-gold/60" aria-hidden="true" />
-            <Doodle className="absolute right-8 bottom-8 block text-gold md:right-12" delay={0.3}>
-              <Star size={34} />
-            </Doodle>
-            <Doodle className="absolute right-20 bottom-14 block text-gold md:right-28" delay={0.42}>
-              <Star size={18} />
-            </Doodle>
-            <p className="label !text-ivory/85">
-              <Sym name="leaf" tone="gold" className="mr-1.5" />
-              The Floor · Prompt of the week
-            </p>
-            <h2 id="floor-h" className="mt-4 max-w-3xl pr-10 text-3xl font-bold italic md:text-[2.75rem]">
-              <WordReveal text={`“${weeklyPrompt.text}”`} />
-            </h2>
-            <Sweep className="mt-3 block h-3 w-56 max-w-full text-gold" delay={0.35}>
-              <Scribble className="h-full w-full" />
-            </Sweep>
-            <p className="mt-4 font-mono text-[0.8125rem] text-ivory/85">
-              {weeklyPrompt.week} · {weeklyPrompt.replies} replies so far
-            </p>
-            <div className="relative mt-7">
-              <Pressable>
-                <Link
-                  to="/floor"
-                  className="btn border-ivory bg-ivory text-oxblood"
-                  style={{ boxShadow: '3px 3px 0 var(--color-gold)' }}
+                {/* the Ramz, on a torn slip pinned across the corner of the book */}
+                <Stick
+                  rest={2.5}
+                  delay={0.2}
+                  className="torn-wrap pointer-events-none relative z-10 mx-4 -mt-3 md:absolute md:right-0 md:-bottom-9 md:mx-0 md:mt-0 md:w-72"
                 >
-                  Take the floor <span aria-hidden="true" className="arrow">⟶</span>
-                </Link>
-              </Pressable>
-            </div>
+                  <span className="tape -top-2.5 left-8 z-10 -rotate-6" aria-hidden="true" />
+                  <div className="torn bg-parchment px-6 py-7">
+                    <StampIn>
+                      <Stamp>Latest Ramz</Stamp>
+                    </StampIn>
+                    <p className="mt-3 font-display text-[1.0625rem] leading-snug text-oxblood italic">{lead.ramz}</p>
+                    <Doodle className="absolute right-5 bottom-4 block text-ink" delay={0.5}>
+                      <Pen size={34} />
+                    </Doodle>
+                  </div>
+                </Stick>
+              </div>
+            </Reveal>
+          </section>
+
+          {/* ---------- 02 · MOTIONS as a contents page, RESOURCES as catalogue cards ---------- */}
+          <section className="ledger-row mt-16 grid gap-14 md:mt-24 lg:grid-cols-12 lg:gap-10">
+            <MarginNo n="02" label="Archive" />
+            <Reveal className="lg:col-span-7">
+              <SectionHead symbol="pilcrow" title="Newest motions" purpose="Fresh topics to practise on." />
+              <ol>
+                {motions.slice(0, 4).map((m, i) => (
+                  <li key={m.slug} className="border-b border-border-warm">
+                    <Link to="/motions" className="toc group flex gap-4 py-4">
+                      <span className="relative w-10 shrink-0 pt-0.5" aria-hidden="true">
+                        <span className="toc-no numeral block text-[1.75rem]">{String(i + 1).padStart(2, '0')}</span>
+                        <Sym name="hand" className="toc-hand absolute top-0 left-0 block text-2xl" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-display text-lg leading-snug font-bold">
+                          <span className="misreg" data-text={m.text}>
+                            {m.text}
+                          </span>
+                        </span>
+                        <span className="meta mt-1.5 flex items-baseline gap-2">
+                          <span className="whitespace-nowrap">
+                            {m.format} · {m.theme}
+                          </span>
+                          <span className="leader" aria-hidden="true" />
+                          <span className="whitespace-nowrap">{formatDate(m.date)}</span>
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+              <Link to="/motions" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
+                All motions <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
+              </Link>
+            </Reveal>
+
+            <Reveal className="lg:col-span-5">
+              <SectionHead
+                symbol="section"
+                title="Newest resources"
+                purpose="Pulled from the catalogue."
+                action={
+                  <Doodle className="hidden w-36 text-ink sm:block lg:hidden" delay={0.25}>
+                    <BookStack labels={['Guides', 'Casefiles', 'Worksheets']} />
+                  </Doodle>
+                }
+              />
+              <ul className="mt-6 px-1">
+                {resources.slice(0, 3).map((r, i) => (
+                  <li key={r.slug} className={i === 0 ? '' : '-mt-3'} style={{ marginLeft: ['0', '1.5rem', '0.5rem'][i] }}>
+                    <Link
+                      to="/resources"
+                      className="index-card group px-5 pt-2.5 pb-9"
+                      style={{ '--tilt': ['-1.6deg', '1.2deg', '-0.6deg'][i] } as CSSProperties}
+                    >
+                      <span className="flex items-baseline justify-between font-mono text-xs tracking-[0.12em] uppercase">
+                        <span className="text-oxblood">{r.kind}</span>
+                        <span className="text-charcoal">{formatDate(r.date)}</span>
+                      </span>
+                      <span className="mt-4 block font-display text-lg leading-snug font-bold">{r.title}</span>
+                      <span className="mt-1 block text-[0.9375rem] leading-[1.55rem] text-charcoal">{r.summary}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link to="/resources" className="mt-5 inline-flex min-h-11 items-center font-bold text-oxblood">
+                All resources <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
+              </Link>
+            </Reveal>
+          </section>
+
+          <div className="ledger-row mt-14 md:mt-20">
+            <Divider />
           </div>
-        </Reveal>
-      </section>
+
+          {/* ---------- 03 · THE FLOOR: a lectern with a note hanging off it ---------- */}
+          <section className="ledger-row mt-14 md:mt-20" aria-labelledby="floor-h">
+            <MarginNo n="03" label="The Floor" />
+            <Reveal>
+              <div className="relative pb-16 md:pb-10">
+                <div className="relative bg-oxblood px-6 pt-10 pb-24 text-ivory md:mr-16 md:px-12 md:pt-14 md:pb-20">
+                  <div className="pointer-events-none absolute inset-2 border border-gold/60" aria-hidden="true" />
+                  <Doodle className="absolute top-7 right-8 hidden text-gold sm:block" delay={0.3}>
+                    <Star size={30} />
+                  </Doodle>
+                  <p className="label !text-ivory/85">
+                    <Sym name="leaf" tone="gold" className="mr-1.5" />
+                    The Floor · Prompt of the week
+                  </p>
+                  <h2 id="floor-h" className="mt-4 max-w-2xl pr-8 text-3xl font-bold italic md:text-[2.75rem]">
+                    <WordReveal text={`“${weeklyPrompt.text}”`} />
+                  </h2>
+                  <Sweep className="mt-3 block h-3 w-56 max-w-full text-gold" delay={0.35}>
+                    <Scribble className="h-full w-full" />
+                  </Sweep>
+                </div>
+
+                <Stick rest={-2} delay={0.3} className="torn-wrap absolute right-3 bottom-0 w-64 md:right-0 md:w-72">
+                  <span className="tape -top-2.5 right-10 z-10 rotate-3" aria-hidden="true" />
+                  <div className="torn bg-parchment px-6 py-7">
+                    <p className="label">{weeklyPrompt.week}</p>
+                    <p className="mt-1 font-display text-xl font-bold">{weeklyPrompt.replies} replies so far</p>
+                    <Pressable className="mt-3">
+                      <Link to="/floor" className="btn btn-primary">
+                        Take the floor <span aria-hidden="true" className="arrow">⟶</span>
+                      </Link>
+                    </Pressable>
+                  </div>
+                </Stick>
+              </div>
+            </Reveal>
+          </section>
+        </div>
+      </div>
 
       {/* ---------- NEW HERE: site info, hidden for members ---------- */}
       {!user && (

@@ -353,3 +353,129 @@ button:hover .arrow {
     transform: translateX(1.6rem);
   }
 }
+
+/* ---- pen cursor: mouse and trackpad only. Text fields keep the text caret. ---- */
+@media (hover: hover) and (pointer: fine) {
+  html {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Cg stroke=%22%23F7F3EA%22 stroke-width=%221.3%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M1.5 1.5 L12 5.5 L5.5 12 Z%22 fill=%22%23171717%22/%3E%3Cpath d=%22M12 5.5 L5.5 12 L8.5 15 L15 8.5 Z%22 fill=%22%23B79558%22/%3E%3Cpath d=%22M15 8.5 L8.5 15 L23.5 30 L30 23.5 Z%22 fill=%22%23171717%22/%3E%3C/g%3E%3Cpath d=%22M3.5 3.5 L7.5 7.5%22 stroke=%22%23F7F3EA%22 stroke-width=%221%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M27 19.5 L29.8 16.7%22 stroke=%22%23B79558%22 stroke-width=%222.2%22 stroke-linecap=%22round%22/%3E%3C/svg%3E") 2 2, auto;
+  }
+  a,
+  button,
+  summary,
+  [role='button'],
+  label[for] {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Cg stroke=%22%23F7F3EA%22 stroke-width=%221.3%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M1.5 1.5 L12 5.5 L5.5 12 Z%22 fill=%22%23681F2B%22/%3E%3Cpath d=%22M12 5.5 L5.5 12 L8.5 15 L15 8.5 Z%22 fill=%22%23B79558%22/%3E%3Cpath d=%22M15 8.5 L8.5 15 L23.5 30 L30 23.5 Z%22 fill=%22%23681F2B%22/%3E%3C/g%3E%3Cpath d=%22M3.5 3.5 L7.5 7.5%22 stroke=%22%23F7F3EA%22 stroke-width=%221%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M27 19.5 L29.8 16.7%22 stroke=%22%23B79558%22 stroke-width=%222.2%22 stroke-linecap=%22round%22/%3E%3C/svg%3E") 2 2, pointer;
+  }
+}
+
+/* ---- notebook layout ---- */
+/* the red margin line of a ruled page, running down the left of the content */
+.ledger {
+  position: relative;
+}
+@media (min-width: 1024px) {
+  .ledger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 5.25rem;
+    width: 1px;
+    background: color-mix(in srgb, var(--color-oxblood) 45%, transparent);
+  }
+  .ledger::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(5.25rem + 3px);
+    width: 1px;
+    background: color-mix(in srgb, var(--color-oxblood) 18%, transparent);
+  }
+  .ledger-row {
+    padding-left: 7.5rem;
+  }
+}
+.ledger-row {
+  position: relative;
+}
+.margin-no {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .margin-no {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: -0.35rem;
+    width: 4.25rem;
+    text-align: right;
+  }
+}
+/* outlined numerals, like unfilled wood type */
+.numeral {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--color-gold);
+}
+.vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+/* table-of-contents dot leader */
+.leader {
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 2px dotted var(--color-border-warm);
+  transform: translateY(-0.35em);
+}
+/* library catalogue card: ruled lines, red head rule, punched hole */
+.index-card {
+  position: relative;
+  display: block;
+  background:
+    linear-gradient(var(--color-oxblood), var(--color-oxblood)) 0 2.6rem / 100% 1px no-repeat,
+    repeating-linear-gradient(transparent 0 1.55rem, color-mix(in srgb, var(--color-ink) 7%, transparent) 1.55rem calc(1.55rem + 1px)),
+    color-mix(in srgb, var(--color-ivory) 75%, white);
+  border: 1px solid var(--color-border-warm);
+  box-shadow: 3px 4px 0 color-mix(in srgb, var(--color-ink) 9%, transparent);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.3s var(--ease-snap);
+}
+.index-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0.7rem;
+  left: 50%;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-left: -0.35rem;
+  border-radius: 50%;
+  background: var(--color-ivory);
+  border: 1px solid var(--color-border-warm);
+}
+@media (hover: hover) {
+  .index-card:hover {
+    transform: rotate(0deg) translateY(-6px);
+    z-index: 2;
+  }
+  /* numeral swaps for a pointing hand */
+  .toc:hover .toc-no {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  .toc:hover .toc-hand {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.toc-no,
+.toc-hand {
+  transition: opacity 0.2s var(--ease-calm), transform 0.3s var(--ease-snap);
+}
+.toc-hand {
+  opacity: 0;
+  transform: translateX(-10px);
+}
