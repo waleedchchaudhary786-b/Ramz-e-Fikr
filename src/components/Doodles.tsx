@@ -122,3 +122,25 @@ export function Rosette({ className, style, size = 300 }: P) {
     </svg>
   )
 }
+
+/** The Ramz seal: the ف monogram ringed by the name and tagline, like a library stamp. */
+export function Seal({ className, style, size = 120 }: P) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 120 120" width={size} height={size} className={`seal ${className ?? ''}`} style={{ filter: 'url(#ink-bleed)', ...style }}>
+      <defs>
+        <path id="seal-ring" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0" />
+      </defs>
+      <circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="60" cy="60" r="53" fill="none" stroke="currentColor" strokeWidth="0.8" />
+      <circle cx="60" cy="60" r="33" fill="none" stroke="currentColor" strokeWidth="0.8" />
+      <text fill="currentColor" style={{ font: '700 9.4px var(--font-mono)', letterSpacing: '0.2em' }}>
+        <textPath href="#seal-ring" startOffset="0">
+          RAMZ-E-FIKR ✦ WHERE THOUGHT BECOMES ARGUMENT ✦
+        </textPath>
+      </text>
+      <text x="60" y="74" textAnchor="middle" fill="currentColor" style={{ font: '700 40px var(--font-urdu)' }}>
+        ف
+      </text>
+    </svg>
+  )
+}

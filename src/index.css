@@ -9,6 +9,8 @@
 @import '@fontsource/plus-jakarta-sans/latin-700.css';
 @import '@fontsource/courier-prime/latin-400.css';
 @import '@fontsource/courier-prime/latin-700.css';
+@import '@fontsource/caveat/latin-600.css';
+@import '@fontsource/caveat/latin-700.css';
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------
@@ -31,6 +33,8 @@
   --font-urdu: 'Amiri', 'Noto Naskh Arabic', serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'Courier Prime', 'Courier New', monospace;
+  /* the marker handwriting from the posters: short notes and asides only */
+  --font-hand: 'Caveat', 'Segoe Print', cursive;
 
   --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1.15);
   --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -511,4 +515,31 @@ button:hover .arrow {
 .paper-area::placeholder {
   color: color-mix(in srgb, var(--color-charcoal) 75%, transparent);
   font-style: italic;
+}
+
+/* ---- brand: handwriting for poster notes, the seal ---- */
+.hand {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.seal {
+  transition: transform 0.9s var(--ease-calm);
+}
+.seal:hover,
+a:hover .seal {
+  transform: rotate(40deg);
+}
+/* coin for the side toss */
+.coin {
+  transform-style: preserve-3d;
+}
+.coin-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  backface-visibility: hidden;
 }

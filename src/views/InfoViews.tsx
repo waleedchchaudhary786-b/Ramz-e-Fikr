@@ -7,6 +7,7 @@ import { Fold } from '../components/Bits'
 import { Divider, Sym } from '../components/Symbols'
 import { FrameCorners } from '../components/Doodles'
 import { PageHead } from './PlaceholderView'
+import { ReviewQueue, StatusStamp } from './StudioView'
 import { allMotions, allResources, articles } from '../data/sample'
 
 const GUIDE: [string, string][] = [
@@ -16,6 +17,8 @@ const GUIDE: [string, string][] = [
   ['The Floor', 'Two rooms. Open Floor has one prompt each week, where you can reply For, Against or Unsure. Article Discussions has one thread per essay.'],
   ['Replying and editing', 'Sign in to reply. You can edit or delete your own replies at any time; edited replies are marked as edited.'],
   ['Your dashboard', 'Once signed in, "My Dashboard" appears beside the logo. It lists what you liked, what you saved and what you wrote.'],
+  ['Writing an essay', 'Open the writing studio from your dashboard or the Articles page. It saves as you type. When you send it, an owner approves it or returns it with a note.'],
+  ['Search', 'Press Ctrl+K (or the magnifier in the header) to search essays, motions, resources and glossary terms at once.'],
   ['What gets moderated', 'Insults and abusive language are stopped before posting. Argue the point, not the person. Anything held is reviewed by an owner, not silently deleted.'],
 ]
 
@@ -46,7 +49,7 @@ export function AboutView() {
               <Sym name="hand" className="mr-2" />
               User guide
             </h2>
-            <p className="meta mt-1">Seven short answers. Open the one you need.</p>
+            <p className="meta mt-1">Short answers. Open the one you need.</p>
             <div className="mt-4">
               {GUIDE.map(([q, a], i) => (
                 <Fold key={q} defaultOpen={i === 0} summary={<span className="font-display text-lg font-bold">{q}</span>}>
@@ -113,7 +116,9 @@ export function DeskView() {
                 </li>
               ))}
             </ol>
-            <p className="meta mt-6">The writing studio opens with accounts, in the next phase.</p>
+            <Link to="/write" className="btn btn-primary mt-6">
+              Open the writing studio <span aria-hidden="true" className="arrow">⟶</span>
+            </Link>
           </Reveal>
         </section>
         <Divider className="my-10" />
@@ -210,18 +215,23 @@ export function DashboardView() {
           </Section>
         </div>
 
-        {user.role !== 'member' && (
-          <section className="mt-10 border-t-2 border-oxblood pt-3">
-            <h2 className="label !font-bold !text-ink">Drafts and submissions</h2>
-            <p className="meta mt-3">The writing studio arrives with accounts, in the next phase.</p>
-          </section>
-        )}
-        {user.role === 'owner' && (
-          <section className="mt-10 border-t-2 border-oxblood pt-3">
-            <h2 className="label !font-bold !text-ink">Owner tools</h2>
-            <p className="meta mt-3">Moderation · Manage · Team. Visible to owners only; built in the next phase.</p>
-          </section>
-        )}
+        <section className="mt-10 border-t-2 border-oxblood pt-3">
+          <h2 className="label !font-bold !text-ink">Your essays · {store.drafts.filter((d) => d.postedBy === user.name).length}</h2>
+          <ul className="mt-2">
+            {store.drafts
+              .filter((d) => d.postedBy === user.name)
+              .map((d) => (
+                <li key={d.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border-warm py-3">
+                  <span className="font-display text-lg font-bold">{d.title || 'Untitled'}</span>
+                  <StatusStamp status={d.status} />
+                </li>
+              ))}
+          </ul>
+          <Link to="/write" className="btn btn-primary mt-4">
+            Open the writing studio <span aria-hidden="true" className="arrow">⟶</span>
+          </Link>
+        </section>
+        {user.role === 'owner' && <ReviewQueue />}
       </div>
     </>
   )

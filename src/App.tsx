@@ -13,6 +13,8 @@ import FloorView from './views/FloorView'
 import { GlossaryView, ResourcesView } from './views/LibraryViews'
 import { AboutView, DashboardView, DeskView } from './views/InfoViews'
 import LoginNudge from './components/LoginNudge'
+import StudioView from './views/StudioView'
+import SearchPalette from './components/Search'
 
 function Routes() {
   const { path } = useRouter()
@@ -34,6 +36,8 @@ function Routes() {
       return <AboutView />
     case '/desk':
       return <DeskView />
+    case '/write':
+      return <StudioView />
     case '/dashboard':
       return <DashboardView />
     case '/signin':
@@ -60,6 +64,7 @@ function Shell() {
       </main>
       <Footer />
       <LoginNudge />
+      <SearchPalette />
     </div>
   )
 }

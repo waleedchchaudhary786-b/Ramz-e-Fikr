@@ -3,8 +3,9 @@ import { Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, TypeRevea
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
-import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Sparks, Star } from '../components/Doodles'
-import { articles, formatDate, motions, resources, weeklyPrompt } from '../data/sample'
+import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Seal, Sparks, Star } from '../components/Doodles'
+import { useArticles } from '../services/store'
+import { formatDate, motions, resources, weeklyPrompt } from '../data/sample'
 
 /** Section number sitting in the notebook margin (desktop only). */
 function MarginNo({ n, label }: { n: string; label: string }) {
@@ -20,7 +21,7 @@ function MarginNo({ n, label }: { n: string; label: string }) {
 
 export default function HomeView() {
   const { user } = useSession()
-  const lead = articles[0]
+  const lead = useArticles()[0]
   const motionOfDay = useMemo(() => motions[new Date().getDate() % motions.length], [])
 
   return (
@@ -36,6 +37,9 @@ export default function HomeView() {
             <Star size={18} />
           </Doodle>
 
+          <StampIn delay={1.3} className="absolute bottom-4 left-5 z-10 hidden text-oxblood/75 md:block lg:left-auto lg:right-[42%]">
+            <Seal size={92} style={{ transform: 'rotate(-14deg)' }} />
+          </StampIn>
           <Reveal stagger onMount className="relative grid items-center gap-12 lg:grid-cols-[1.35fr_1fr]">
             <div>
               <RevealItem>
@@ -57,7 +61,10 @@ export default function HomeView() {
                 </h1>
               </RevealItem>
               <RevealItem>
-                <p className="measure mt-5 text-lg text-charcoal">
+                <p className="hand mt-4 -rotate-2 text-[1.75rem] text-oxblood md:text-3xl">…for people who are always ready for a good debate!</p>
+              </RevealItem>
+              <RevealItem>
+                <p className="measure mt-4 text-lg text-charcoal">
                   Motions to practise, guides to prepare with, essays to disagree with, and a floor to argue back on.
                 </p>
               </RevealItem>
@@ -88,6 +95,7 @@ export default function HomeView() {
                     <Sym name="pilcrow" className="mr-1.5" />
                     Motion of the day
                   </p>
+                  <p className="hand mt-1 text-xl text-oxblood">could you argue both sides?</p>
                   <p className="mt-3 font-display text-[1.375rem] leading-snug font-bold">{motionOfDay.text}</p>
                   <p className="meta mt-3">
                     {motionOfDay.format} · {motionOfDay.theme}
@@ -283,7 +291,7 @@ export default function HomeView() {
           <Stick rest={-0.8} className="torn-wrap relative max-w-3xl">
             <span className="tape -top-2.5 left-10 z-10 -rotate-3" aria-hidden="true" />
             <div className="torn bg-parchment px-7 py-9 md:px-10">
-              <h2 id="new-h" className="label !font-bold !text-ink">
+              <h2 id="new-h" className="hand text-3xl text-oxblood">
                 New here?
               </h2>
               <p className="measure mt-2 text-[0.9375rem]">

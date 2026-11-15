@@ -1,7 +1,7 @@
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Brand } from './Navbar'
-import { Sym } from './Symbols'
+import { Seal } from './Doodles'
 
 type Item = { to: string; label: string } | { label: string; onClick: () => void }
 type Col = { title: string; items: Item[] }
@@ -64,9 +64,8 @@ export default function Footer() {
       <div className="wrap pt-10 pb-8">
         <div className="grid gap-8 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
-            <Brand />
-            <p className="label mt-3">Where thought becomes argument.</p>
-            <p className="mt-3 max-w-xs text-sm text-charcoal">
+            <p className="label !font-bold !text-ink">About this site</p>
+            <p className="mt-2 max-w-xs text-sm text-charcoal">
               An open archive of debate resources, kept by students and free to use.
             </p>
           </div>
@@ -110,11 +109,15 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-border-warm pt-4">
-          <p className="meta">Vol. I · 2026 · Lahore · Faisalabad</p>
-          <p className="meta">
-            <Sym name="fe" className="mr-1 text-base" /> Ramz-e-Fikr
-          </p>
+        {/* poster sign-off: wordmark, tagline and seal, as on the Instagram posts */}
+        <div className="mt-10 flex flex-col items-center border-t border-border-warm pt-8 text-center">
+          <Link to="/" aria-label="Ramz-e-Fikr home" className="relative inline-block">
+            <Brand stacked />
+            <Seal className="absolute -top-2 -right-24 hidden text-oxblood/80 sm:block" size={76} />
+          </Link>
+          <p className="label mt-3">Where thought becomes argument.</p>
+          <p className="hand mt-3 -rotate-1 text-2xl text-oxblood">one community, endless perspectives</p>
+          <p className="meta mt-5">Vol. I · 2026 · Lahore · Faisalabad</p>
         </div>
       </div>
     </footer>

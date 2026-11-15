@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Menu, Search, X } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { DUR, EASE_CALM, EASE_SNAP, InkProgress, motion, useReducedMotion } from '../utils/motion'
 import { Link, useRouter } from '../utils/router'
 import { useSession } from '../services/session'
+import { OPEN_SEARCH } from './Search'
 
 /* Main nav: five items, no more. About lives in the footer only. */
 export const NAV = [
@@ -14,11 +15,18 @@ export const NAV = [
   { to: '/glossary', label: 'Glossary' },
 ] as const
 
-export function Brand({ compact = false }: { compact?: boolean }) {
+export function Brand({ compact = false, stacked = false }: { compact?: boolean; stacked?: boolean }) {
+  if (stacked)
+    return (
+      <span className="inline-flex flex-col items-center text-center">
+        <span className="urdu text-5xl leading-[1.2] font-bold text-oxblood">رمزِ فکر</span>
+        <span className="font-display text-base font-bold tracking-[0.3em] text-oxblood">RAMZ-E-FIKR</span>
+      </span>
+    )
   return (
     <span className="flex items-baseline gap-2.5 whitespace-nowrap">
       <span className={`urdu font-bold text-oxblood ${compact ? 'text-2xl' : 'text-[1.75rem]'}`}>رمزِ فکر</span>
-      <span className="font-display text-[0.8125rem] font-bold tracking-[0.22em] text-ink md:text-sm">RAMZ-E-FIKR</span>
+      <span className="font-display text-[0.8125rem] font-bold tracking-[0.22em] text-oxblood md:text-sm">RAMZ-E-FIKR</span>
     </span>
   )
 }
@@ -94,7 +102,17 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="ml-auto grid h-11 w-11 place-items-center lg:hidden"
+          onClick={() => window.dispatchEvent(new Event(OPEN_SEARCH))}
+          aria-label="Search the archive (Ctrl+K)"
+          title="Search (Ctrl+K)"
+          className="ml-auto grid h-11 w-11 place-items-center text-ink hover:text-oxblood lg:ml-1"
+        >
+          <Search size={19} />
+        </button>
+
+        <button
+          type="button"
+          className="grid h-11 w-11 place-items-center lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? 'Close menu' : 'Open menu'}

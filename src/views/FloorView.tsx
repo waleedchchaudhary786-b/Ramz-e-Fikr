@@ -3,14 +3,32 @@ import { AnimatePresence } from 'motion/react'
 import { DUR, EASE_SNAP, motion, Reveal, Sweep, WordReveal } from '../utils/motion'
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
-import { actions, findBlocked, timeAgo, useStore, type Stance } from '../services/store'
+import { actions, findBlocked, timeAgo, useArticles, useStore, type Stance } from '../services/store'
 import { Fold, Tabs } from '../components/Bits'
 import { Sym } from '../components/Symbols'
 import { Scribble, Star } from '../components/Doodles'
 import { PageHead } from './PlaceholderView'
-import { articles, pastPrompts, weeklyPrompt } from '../data/sample'
+import { pastPrompts, weeklyPrompt } from '../data/sample'
 
 const STANCES: Stance[] = ['For', 'Against', 'Unsure']
+
+/** Reply text with @names picked out in oxblood. */
+function WithMentions({ text, names }: { text: string; names: string[] }) {
+  const parts = text.split(/(@[\p{L}][\p{L}\d_]*)/u)
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith('@') && names.some((n) => n.toLowerCase() === p.slice(1).toLowerCase()) ? (
+          <strong key={i} className="font-bold text-oxblood">
+            {p}
+          </strong>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  )
+}
 
 /** A discussion thread: replies, plus a composer for signed-in members. */
 export function Thread({ thread, withStance = false }: { thread: string; withStance?: boolean }) {
@@ -21,6 +39,10 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
   const [stance, setStance] = useState<Stance>('Unsure')
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
+  // people you can tag: anyone who has replied anywhere on the Floor
+  const names = [...new Set(posts.map((p) => p.author.split(' ')[0]))]
+  const tagging = /(?:^|\s)@([\p{L}\d_]*)$/u.exec(text)
+  const suggestions = tagging ? names.filter((n) => n.toLowerCase().startsWith(tagging[1].toLowerCase()) && n.toLowerCase() !== tagging[1].toLowerCase()).slice(0, 5) : []
   const blocked = findBlocked(text)
   const blockedEdit = findBlocked(draft)
 
@@ -80,7 +102,9 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
                     </div>
                   </div>
                 ) : (
-                  <p className="measure mt-1.5">{p.text}</p>
+                  <p className="measure mt-1.5">
+                    <WithMentions text={p.text} names={names} />
+                  </p>
                 )}
                 {mine && editing !== p.id && (
                   <p className="mt-1 flex gap-4">
@@ -119,10 +143,34 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
               onChange={(e) => setText(e.target.value)}
               rows={3}
               maxLength={1200}
-              placeholder="Make your case…"
+              placeholder="Make your case… type @ to tag someone"
               className="paper-area mt-1"
             />
           </label>
+          <AnimatePresence>
+            {suggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mt-1 flex flex-wrap items-center gap-1"
+                role="group"
+                aria-label="Tag someone"
+              >
+                <span className="label mr-1">Tag</span>
+                {suggestions.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setText((t) => t.replace(/@[\p{L}\d_]*$/u, '@' + n + ' '))}
+                    className="min-h-11 border border-border-warm px-3 font-mono text-[0.8125rem] hover:border-oxblood md:min-h-9"
+                  >
+                    @{n}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
           {blocked && (
             <p className="mt-1 text-sm text-oxblood" role="alert">
               Please rephrase: “{blocked}” is not allowed here. Argue the point, not the person.
@@ -169,6 +217,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
 export default function FloorView() {
   const [tab, setTab] = useState<'open' | 'articles'>('open')
   const { posts } = useStore()
+  const articles = useArticles()
   const count = (t: string) => posts.filter((p) => p.thread === t).length
   const threads = articles
     .map((a) => ({ a, n: count(`article-${a.slug}`), last: Math.max(0, ...posts.filter((p) => p.thread === `article-${a.slug}`).map((p) => p.at)) }))

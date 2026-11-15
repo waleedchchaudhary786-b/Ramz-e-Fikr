@@ -149,6 +149,9 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
   const [left, setLeft] = useState(15 * 60)
   const [running, setRunning] = useState(false)
   const timer = useRef<number | undefined>(undefined)
+  const [turns, setTurns] = useState(0) // half-turns of the coin; even = Proposition
+  const [tossed, setTossed] = useState(false)
+  const side = turns % 2 === 0 ? 'Proposition' : 'Opposition'
 
   useEffect(() => setShown(chosen), [chosen])
 
@@ -217,6 +220,38 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
         <button type="button" onClick={draw} disabled={drawing} className="btn btn-ghost mt-4">
           <Shuffle size={16} aria-hidden="true" /> Draw a random motion
         </button>
+
+        {/* toss a coin for which side you argue */}
+        <div className="mt-5 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              const wantOpp = Math.random() < 0.5
+              setTurns((t) => {
+                const next = t + 6
+                return (next % 2 === 1) === wantOpp ? next : next + 1
+              })
+              setTossed(true)
+            }}
+            aria-label="Toss a coin for your side"
+            className="relative h-16 w-16 shrink-0 [perspective:600px]"
+          >
+            <motion.span
+              className="coin absolute inset-0 block"
+              animate={{ rotateY: turns * 180, y: [0, -18, 0] }}
+              transition={{ duration: reduced ? 0 : 0.9, ease: [0.22, 0.61, 0.36, 1] }}
+            >
+              <span className="coin-face border-2 border-gold bg-oxblood font-display text-2xl font-black text-ivory">P</span>
+              <span className="coin-face border-2 border-oxblood bg-gold font-display text-2xl font-black text-burgundy" style={{ transform: 'rotateY(180deg)' }}>
+                O
+              </span>
+            </motion.span>
+          </button>
+          <p aria-live="polite">
+            <span className="label block">Your side</span>
+            <span className="font-display text-xl font-bold">{tossed ? side : 'Tap the coin to toss'}</span>
+          </p>
+        </div>
 
         <Scribble className="my-6 block h-2.5 w-full text-border-warm" />
 

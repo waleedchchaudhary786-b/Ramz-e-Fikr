@@ -2,7 +2,9 @@
    This is the "local fallback" so the site works with no database.
    When Supabase is connected (Phase 5) these calls move to the server,
    where the rules are enforced properly. */
-import { useSyncExternalStore } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
+import { articles as baseArticles, type Article } from '../data/sample'
+import { articleDetails, toBlocks, wordCount, type ArticleDetail } from '../data/articles'
 
 export type Stance = 'For' | 'Against' | 'Unsure'
 export type FloorPost = {
@@ -14,7 +16,20 @@ export type FloorPost = {
   at: number
   editedAt?: number
 }
-type State = { likes: string[]; bookmarks: string[]; posts: FloorPost[] }
+export type DraftStatus = 'draft' | 'pending' | 'approved' | 'rejected'
+export type Draft = {
+  id: string
+  title: string
+  authorName: string
+  ramz: string
+  body: string
+  status: DraftStatus
+  /** the owner's note when an essay is returned */
+  note?: string
+  postedBy: string
+  updatedAt: number
+}
+type State = { likes: string[]; bookmarks: string[]; posts: FloorPost[]; drafts: Draft[] }
 
 const KEY = 'ramz.local-store.v1'
 const day = 86_400_000
@@ -22,6 +37,7 @@ const now = Date.now()
 const seed: State = {
   likes: [],
   bookmarks: [],
+  drafts: [],
   posts: [
     { id: 's1', thread: 'prompt', author: 'Areeba', stance: 'For', at: now - 3 * day, text: 'Yes. If you can only argue what you already believe, you are not debating, you are testifying.' },
     { id: 's2', thread: 'prompt', author: 'Hamza', stance: 'Against', at: now - 2 * day, text: 'There is a line. Being drawn on the side of something you find cruel and performing it well is practice in the wrong skill.' },
@@ -38,7 +54,7 @@ const listeners = new Set<() => void>()
 function load(): State {
   try {
     const raw = window.localStorage.getItem(KEY)
-    if (raw) return { ...seed, ...(JSON.parse(raw) as State) }
+    if (raw) return { ...seed, ...(JSON.parse(raw) as Partial<State>) }
   } catch {
     /* fall through to seed */
   }
@@ -72,6 +88,59 @@ export const actions = {
   editPost: (id: string, text: string) =>
     set({ ...state, posts: state.posts.map((p) => (p.id === id ? { ...p, text, editedAt: Date.now() } : p)) }),
   deletePost: (id: string) => set({ ...state, posts: state.posts.filter((p) => p.id !== id) }),
+  /** create or update a draft; returns its id */
+  saveDraft: (d: Omit<Draft, 'id' | 'updatedAt' | 'status'> & { id?: string }): string => {
+    const id = d.id ?? 'd' + Date.now().toString(36)
+    const existing = state.drafts.find((x) => x.id === id)
+    const next: Draft = { ...(existing ?? { status: 'draft' as const }), ...d, id, updatedAt: Date.now() }
+    set({ ...state, drafts: existing ? state.drafts.map((x) => (x.id === id ? next : x)) : [next, ...state.drafts] })
+    return id
+  },
+  setDraftStatus: (id: string, status: DraftStatus, note?: string) =>
+    set({ ...state, drafts: state.drafts.map((d) => (d.id === id ? { ...d, status, note, updatedAt: Date.now() } : d)) }),
+  deleteDraft: (id: string) => set({ ...state, drafts: state.drafts.filter((d) => d.id !== id) }),
+}
+
+/* ---- articles: the built-in essays plus any reader essay an owner has approved ---- */
+const mins = (words: number) => Math.max(1, Math.round(words / 200))
+const isoDay = (t: number) => new Date(t).toISOString().slice(0, 10)
+
+function draftDetail(d: Draft): ArticleDetail {
+  return { brief: [], blocks: toBlocks(d.body), inARound: [], bio: `Posted by ${d.postedBy}.` }
+}
+
+export function useArticles(): Article[] {
+  const { drafts } = useStore()
+  return useMemo(() => {
+    const approved: Article[] = drafts
+      .filter((d) => d.status === 'approved')
+      .map((d) => {
+        const blocks = toBlocks(d.body)
+        const first = blocks.find((b) => b.t === 'p')
+        return {
+          slug: 'u-' + d.id,
+          title: d.title,
+          authorName: d.authorName || d.postedBy,
+          postedBy: d.postedBy,
+          date: isoDay(d.updatedAt),
+          ramz: d.ramz,
+          excerpt: first && first.t === 'p' ? first.text.slice(0, 160) + (first.text.length > 160 ? '…' : '') : '',
+          category: 'Reader essay',
+          readMins: mins(wordCount(blocks)),
+        }
+      })
+    const base = baseArticles.map((a) => {
+      const det = articleDetails[a.slug]
+      return det ? { ...a, readMins: mins(wordCount(det.blocks)) } : a
+    })
+    return [...approved, ...base]
+  }, [drafts])
+}
+
+export function getArticleDetail(slug: string): ArticleDetail | null {
+  if (articleDetails[slug]) return articleDetails[slug]
+  const d = state.drafts.find((x) => 'u-' + x.id === slug)
+  return d ? draftDetail(d) : null
 }
 
 /* ---- language pre-check (layer 1 of 3: the friendly client-side note) ----

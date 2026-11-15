@@ -50,7 +50,7 @@ export function PageHead({
           {note && (
             <Stick rest={2} delay={0.4} className="torn-wrap relative mr-6 hidden w-60 md:block">
               <span className="tape -top-2.5 right-8 z-10 rotate-6" aria-hidden="true" />
-              <p className="torn bg-parchment px-5 py-6 font-display text-[1.0625rem] leading-snug text-oxblood italic" style={info ? { background: 'var(--color-ivory)' } : undefined}>
+              <p className="hand torn bg-parchment px-5 py-6 text-2xl text-oxblood" style={info ? { background: 'var(--color-ivory)' } : undefined}>
                 {note}
               </p>
             </Stick>

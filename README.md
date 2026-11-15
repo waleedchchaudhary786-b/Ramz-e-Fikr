@@ -21,10 +21,13 @@ An open archive of debate resources. React 19, Vite, Tailwind v4, Motion.
 
 ## Status
 
-Done: design foundation, home page, and working inner pages (Articles and reader, Motions with
-calendar filter, random draw and prep timer, Resources, Glossary, The Floor with replies,
-About and user guide, The Desk, Dashboard, login note).
+Done: design foundation, home page, and working inner pages: Articles (detailed reader with
+contents, takeaways and pull quotes), Motions (calendar filter, random draw, coin toss, prep timer),
+Resources, Glossary, The Floor (replies, editing, @tags), About and user guide, The Desk, Dashboard,
+writing studio with owner review, and Ctrl+K search.
 
-Likes, saves and Floor replies are stored in the visitor's own browser for now
-(`src/services/store.ts`). Real accounts, database-enforced roles and moderation, the writing
-studio and the Supabase schema are the next phases.
+Everything a visitor does (likes, saves, replies, drafts, approvals) is stored in their own
+browser for now (`src/services/store.ts`). Real accounts, database-enforced roles and moderation,
+and the Supabase schema are the next phase.
+
+Essay text lives in `src/data/articles.ts`; all of it is sample content.
