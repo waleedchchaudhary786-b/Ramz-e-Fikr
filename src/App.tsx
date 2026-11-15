@@ -15,6 +15,7 @@ import { AboutView, DashboardView, DeskView } from './views/InfoViews'
 import LoginNudge from './components/LoginNudge'
 import StudioView from './views/StudioView'
 import SearchPalette from './components/Search'
+import { actions, useStore } from './services/store'
 
 function Routes() {
   const { path } = useRouter()
@@ -47,6 +48,20 @@ function Routes() {
   }
 }
 
+/** Shows the reason when the database refuses a change. */
+function StoreNotice() {
+  const { error } = useStore()
+  if (!error) return null
+  return (
+    <div role="alert" className="fixed inset-x-3 top-24 z-[80] mx-auto flex max-w-md items-start gap-3 border border-ink bg-parchment p-4 shadow-[4px_5px_0_rgba(23,23,23,0.12)]">
+      <p className="flex-1 text-[0.9375rem]">{error}</p>
+      <button type="button" onClick={actions.clearError} className="min-h-11 px-2 font-mono text-[0.8125rem] text-oxblood underline">
+        Close
+      </button>
+    </div>
+  )
+}
+
 function Shell() {
   const { path } = useRouter()
   return (
@@ -65,6 +80,7 @@ function Shell() {
       <Footer />
       <LoginNudge />
       <SearchPalette />
+      <StoreNotice />
     </div>
   )
 }

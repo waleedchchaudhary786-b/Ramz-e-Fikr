@@ -42,7 +42,7 @@ export default function StudioView() {
     if (!user || !dirty.current) return
     if (!form.title.trim() && !form.body.trim()) return
     const t = window.setTimeout(() => {
-      const newId = actions.saveDraft({ id, ...form, postedBy: user.name })
+      const newId = actions.saveDraft({ id, ...form, postedBy: user.name, postedById: user.id })
       setId(newId)
       setSavedAt(Date.now())
       dirty.current = false
@@ -62,7 +62,7 @@ export default function StudioView() {
       </>
     )
 
-  const mine = drafts.filter((d) => d.postedBy === user.name)
+  const mine = drafts.filter((d) => d.postedById === user.id)
   const current = mine.find((d) => d.id === id)
   const locked = current?.status === 'pending' || current?.status === 'approved'
   const words = wordCount(toBlocks(form.body))
@@ -97,9 +97,8 @@ export default function StudioView() {
           onSubmit={(e) => {
             e.preventDefault()
             if (!ready || locked) return
-            const newId = actions.saveDraft({ id, ...form, postedBy: user.name })
-            actions.setDraftStatus(newId, 'pending')
-            setId(newId)
+            dirty.current = false
+            setId(actions.saveDraft({ id, ...form, postedBy: user.name, postedById: user.id }, true))
           }}
           className="min-w-0"
         >
@@ -208,8 +207,9 @@ export default function StudioView() {
 
 /** Owner-only: essays waiting for a decision. */
 export function ReviewQueue() {
-  const { drafts } = useStore()
+  const { drafts, posts } = useStore()
   const pending = drafts.filter((d) => d.status === 'pending')
+  const held = posts.filter((p) => p.flagged)
   const [notes, setNotes] = useState<Record<string, string>>({})
   return (
     <section className="mt-10 border-t-2 border-oxblood pt-3">
@@ -249,7 +249,29 @@ export function ReviewQueue() {
           ))}
         </AnimatePresence>
       </ul>
-      <p className="meta mt-4">Moderation of replies, and team management, arrive with real accounts.</p>
+      <h2 className="label mt-10 !font-bold !text-ink">Moderation · replies held by the language check · {held.length}</h2>
+      {held.length === 0 && <p className="meta mt-3">Nothing is being held.</p>}
+      <ul className="mt-3">
+        <AnimatePresence>
+          {held.map((p) => (
+            <motion.li key={p.id} layout exit={{ opacity: 0, x: -20 }} className="border-b border-border-warm py-3">
+              <p className="meta">
+                <strong className="font-bold text-ink">{p.author}</strong> · {timeAgo(p.at)} · {p.thread}
+              </p>
+              <p className="mt-1">{p.text}</p>
+              <div className="mt-2 flex gap-2">
+                <button type="button" onClick={() => actions.allowPost(p.id)} className="btn btn-ghost">
+                  Allow
+                </button>
+                <button type="button" onClick={() => actions.deletePost(p.id)} className="btn btn-ghost">
+                  Delete
+                </button>
+              </div>
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+      <p className="meta mt-4">The banned-word list is edited in Supabase: Table Editor, then banned_terms.</p>
     </section>
   )
 }

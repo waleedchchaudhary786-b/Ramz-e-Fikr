@@ -2,7 +2,7 @@
 import { Reveal, Stick } from '../utils/motion'
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
-import { useStore, timeAgo } from '../services/store'
+import { actions, useStore, timeAgo } from '../services/store'
 import { Fold } from '../components/Bits'
 import { Divider, Sym } from '../components/Symbols'
 import { FrameCorners } from '../components/Doodles'
@@ -161,7 +161,7 @@ export function DashboardView() {
       </>
     )
 
-  const mine = store.posts.filter((p) => p.author === user.name).sort((a, b) => b.at - a.at)
+  const mine = store.posts.filter((p) => p.authorId === user.id).sort((a, b) => b.at - a.at)
   const Section = ({ title, empty, children }: { title: string; empty: string; children: React.ReactNode[] }) => (
     <section className="border-t-2 border-oxblood pt-3">
       <h2 className="label !font-bold !text-ink">
@@ -198,6 +198,32 @@ export function DashboardView() {
           </div>
         </Stick>
 
+        {store.notices.length > 0 && (
+          <section className="mb-10 border-t-2 border-oxblood pt-3">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="label !font-bold !text-ink">
+                Notices · {store.notices.filter((n) => !n.read).length} new
+              </h2>
+              <button type="button" onClick={actions.markNoticesRead} className="min-h-11 font-mono text-[0.8125rem] text-oxblood underline underline-offset-2">
+                Mark all read
+              </button>
+            </div>
+            <ul>
+              {store.notices.map((n) => (
+                <li key={n.id} className="border-b border-border-warm py-2.5">
+                  <Link to={n.link ?? '/dashboard'} className="flex gap-3 hover:text-oxblood">
+                    <span aria-hidden="true" className={n.read ? 'text-border-warm' : 'text-oxblood'}>
+                      ●
+                    </span>
+                    <span className={n.read ? 'text-charcoal' : 'font-bold'}>{n.body}</span>
+                  </Link>
+                  <p className="meta ml-6">{timeAgo(n.at)}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <div className="grid gap-10 md:grid-cols-3">
           <Section title="Liked" empty="Nothing liked yet.">
             {store.likes.map(row)}
@@ -216,7 +242,7 @@ export function DashboardView() {
         </div>
 
         <section className="mt-10 border-t-2 border-oxblood pt-3">
-          <h2 className="label !font-bold !text-ink">Your essays · {store.drafts.filter((d) => d.postedBy === user.name).length}</h2>
+          <h2 className="label !font-bold !text-ink">Your essays · {store.drafts.filter((d) => d.postedById === user.id).length}</h2>
           <ul className="mt-2">
             {store.drafts
               .filter((d) => d.postedBy === user.name)

@@ -1,6 +1,7 @@
 import { Doodle, Reveal, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
 import { Sparks, Star } from '../components/Doodles'
 import { Link } from '../utils/router'
+import { useState } from 'react'
 import { useSession, type Role } from '../services/session'
 import { Sym, type SymbolName } from '../components/Symbols'
 
@@ -89,8 +90,104 @@ export default function PlaceholderView(props: {
   )
 }
 
-/* Local preview sign-in: pick a role to see the signed-in states. */
+/* Sign in. Connected: a code by email (no passwords to remember or leak).
+   Local preview: pick a role to see the signed-in states. */
 export function SignInPreview() {
+  const { connected } = useSession()
+  return connected ? <SignInReal /> : <SignInLocal />
+}
+
+function SignInReal() {
+  const { user, ready, sendCode, verifyCode, signOut } = useSession()
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [code, setCode] = useState('')
+  const [step, setStep] = useState<'email' | 'code'>('email')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  async function onEmail(e: React.FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    setMsg(null)
+    const r = await sendCode(email.trim(), name.trim())
+    setBusy(false)
+    if (r.ok) setStep('code')
+    else setMsg(r.message)
+  }
+  async function onCode(e: React.FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    setMsg(null)
+    const r = await verifyCode(email.trim(), code.trim())
+    setBusy(false)
+    if (!r.ok) setMsg(r.message)
+  }
+
+  return (
+    <>
+      <PageHead info symbol="fe" title="Sign in" purpose="One step for new and returning members: we email you a code." note="No password to remember." />
+      <div className="wrap max-w-md pt-8">
+        {!ready ? (
+          <p className="meta">Checking…</p>
+        ) : user ? (
+          <div className="card p-6">
+            <p>
+              Signed in as <strong>{user.name}</strong> <span className="meta capitalize">· {user.role}</span>
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link to="/dashboard" className="btn btn-primary">
+                My Dashboard
+              </Link>
+              <button type="button" onClick={signOut} className="btn btn-ghost">
+                Sign out
+              </button>
+            </div>
+          </div>
+        ) : step === 'email' ? (
+          <form onSubmit={onEmail} className="space-y-6">
+            <label className="block">
+              <span className="label">Email</span>
+              <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="paper-input mt-1" placeholder="you@example.com" />
+            </label>
+            <label className="block">
+              <span className="label">Display name (new members only)</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} minLength={2} maxLength={40} autoComplete="nickname" className="paper-input mt-1" placeholder="How your name appears on replies" />
+            </label>
+            <button type="submit" disabled={busy} className="btn btn-primary disabled:opacity-50">
+              {busy ? 'Sending…' : 'Email me a code'} <span aria-hidden="true" className="arrow">⟶</span>
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={onCode} className="space-y-6">
+            <p>
+              We sent a code to <strong>{email}</strong>. Type it here, or click the link in the email.
+            </p>
+            <label className="block">
+              <span className="label">Code from the email</span>
+              <input inputMode="numeric" autoComplete="one-time-code" required value={code} onChange={(e) => setCode(e.target.value)} className="paper-input mt-1 !text-2xl tracking-[0.3em]" placeholder="000000" />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <button type="submit" disabled={busy} className="btn btn-primary disabled:opacity-50">
+                {busy ? 'Checking…' : 'Sign in'}
+              </button>
+              <button type="button" onClick={() => setStep('email')} className="btn btn-ghost">
+                Use a different email
+              </button>
+            </div>
+          </form>
+        )}
+        {msg && (
+          <p className="mt-4 text-sm text-oxblood" role="alert">
+            {msg}
+          </p>
+        )}
+      </div>
+    </>
+  )
+}
+
+function SignInLocal() {
   const { user, signInPreview, signOut } = useSession()
   const roles: { role: Role; note: string }[] = [
     { role: 'member', note: 'Comment, like, bookmark, submit an essay.' },
@@ -136,7 +233,7 @@ export function SignInPreview() {
             ))}
           </ul>
         )}
-        <p className="meta mt-5">Real email sign-in is connected in the accounts phase.</p>
+        <p className="meta mt-5">Preview mode: no database is connected, so nothing here is shared with other people. See SETUP.md to connect one.</p>
       </div>
     </>
   )

@@ -19,15 +19,15 @@ An open archive of debate resources. React 19, Vite, Tailwind v4, Motion.
 - `src/data/sample.ts`: SAMPLE content. Replace before launch
 - `src/services/session.tsx`: preview sign-in (member, editor, owner) for local testing
 
+## Database
+
+The site runs in local preview mode until you connect Supabase. Follow `SETUP.md`.
+The tables and every permission rule are in `supabase/schema.sql`.
+
 ## Status
 
-Done: design foundation, home page, and working inner pages: Articles (detailed reader with
-contents, takeaways and pull quotes), Motions (calendar filter, random draw, coin toss, prep timer),
-Resources, Glossary, The Floor (replies, editing, @tags), About and user guide, The Desk, Dashboard,
-writing studio with owner review, and Ctrl+K search.
+Done: all pages, the writing studio with owner review, search, and the Supabase connection
+(email-code sign-in, shared replies, likes, saves, essays, notices, held-reply moderation).
 
-Everything a visitor does (likes, saves, replies, drafts, approvals) is stored in their own
-browser for now (`src/services/store.ts`). Real accounts, database-enforced roles and moderation,
-and the Supabase schema are the next phase.
-
-Essay text lives in `src/data/articles.ts`; all of it is sample content.
+Not yet in the database: motions, resources, glossary, the weekly prompt and the three sample
+essays, which are still edited in `src/data/`. There is no admin screen for those yet.

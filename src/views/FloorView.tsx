@@ -49,7 +49,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
   function submit(e: React.FormEvent) {
     e.preventDefault()
     if (!user || !text.trim() || blocked) return
-    actions.addPost({ thread, author: user.name, text: text.trim(), stance: withStance ? stance : undefined })
+    actions.addPost({ thread, author: user.name, authorId: user.id, text: text.trim(), stance: withStance ? stance : undefined })
     setText('')
   }
 
@@ -58,7 +58,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
       <ul>
         <AnimatePresence initial={false}>
           {list.map((p) => {
-            const mine = user?.name === p.author
+            const mine = user?.id === p.authorId
             return (
               <motion.li
                 key={p.id}
@@ -73,6 +73,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
                   <strong className="font-bold text-ink">{p.author}</strong>
                   {p.stance && <span className="text-oxblood"> · {p.stance}</span>} · {timeAgo(p.at)}
                   {p.editedAt && <span> · edited {timeAgo(p.editedAt)}</span>}
+                  {p.flagged && <strong className="text-oxblood"> · held for review: only you and the owners can see this</strong>}
                 </p>
                 {editing === p.id ? (
                   <div className="mt-2">
