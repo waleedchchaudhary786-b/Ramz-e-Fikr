@@ -7,6 +7,12 @@ import Ticker from './components/Ticker'
 import Footer from './components/Footer'
 import HomeView from './views/HomeView'
 import PlaceholderView, { SignInPreview } from './views/PlaceholderView'
+import ArticlesView from './views/ArticlesView'
+import MotionsView from './views/MotionsView'
+import FloorView from './views/FloorView'
+import { GlossaryView, ResourcesView } from './views/LibraryViews'
+import { AboutView, DashboardView, DeskView } from './views/InfoViews'
+import LoginNudge from './components/LoginNudge'
 
 function Routes() {
   const { path } = useRouter()
@@ -15,21 +21,21 @@ function Routes() {
     case '/':
       return <HomeView />
     case '/articles':
-      return <PlaceholderView symbol="hand" title="Articles" purpose="Essays and opinion from debaters, each with one idea worth arguing about." phase="Phase 3" />
+      return <ArticlesView />
     case '/resources':
-      return <PlaceholderView symbol="section" title="Resources" purpose="Guides, casefiles and worksheets to prepare with." phase="Phase 3" />
+      return <ResourcesView />
     case '/motions':
-      return <PlaceholderView symbol="pilcrow" title="Motions" purpose="A searchable bank of motions, with a prep timer and a random draw." phase="Phase 3" />
+      return <MotionsView />
     case '/floor':
-      return <PlaceholderView symbol="leaf" title="The Floor" purpose="Where readers argue back: discuss our articles, or take the week's open prompt." phase="Phase 3" />
+      return <FloorView />
     case '/glossary':
-      return <PlaceholderView symbol="dagger" title="Glossary" purpose="Debate terms in plain language, in English and Urdu." phase="Phase 3" />
+      return <GlossaryView />
     case '/about':
-      return <PlaceholderView info symbol="fe" title="About" purpose="What Ramz-e-Fikr is, how the site works, and a guide to using it." phase="Phase 3" />
+      return <AboutView />
     case '/desk':
-      return <PlaceholderView info symbol="dagger" title="The Desk" purpose="Who runs the publication, how to submit, and how approval works." phase="Phase 3" />
+      return <DeskView />
     case '/dashboard':
-      return <PlaceholderView info symbol="fe" title="My Dashboard" purpose="Your activity, likes, bookmarks and drafts in one place." phase="Phase 4" />
+      return <DashboardView />
     case '/signin':
       return <SignInPreview />
     default:
@@ -53,6 +59,7 @@ function Shell() {
         </PageTransition>
       </main>
       <Footer />
+      <LoginNudge />
     </div>
   )
 }

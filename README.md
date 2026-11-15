@@ -21,5 +21,10 @@ An open archive of debate resources. React 19, Vite, Tailwind v4, Motion.
 
 ## Status
 
-Phase 2 (design foundation) is done: tokens, motion kit, navbar, ticker, footer, home.
-Pages, accounts, the Floor, moderation and the Supabase schema follow in later phases.
+Done: design foundation, home page, and working inner pages (Articles and reader, Motions with
+calendar filter, random draw and prep timer, Resources, Glossary, The Floor with replies,
+About and user guide, The Desk, Dashboard, login note).
+
+Likes, saves and Floor replies are stored in the visitor's own browser for now
+(`src/services/store.ts`). Real accounts, database-enforced roles and moderation, the writing
+studio and the Supabase schema are the next phases.
