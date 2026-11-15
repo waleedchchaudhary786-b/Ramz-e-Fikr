@@ -149,4 +149,69 @@ export function TypeReveal({ text, className, delay = 0 }: { text: string; class
   )
 }
 
+/* ---- Poster motions: original to Ramz, built from how paper and ink behave ---- */
+
+/** A doodle "inked on": pops from small and tilted, with a little overshoot. */
+export function Doodle({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
+  const reduced = !!useReducedMotion()
+  return (
+    <motion.span
+      aria-hidden="true"
+      className={className}
+      initial={{ opacity: 0, scale: reduced ? 1 : 0.5, rotate: reduced ? 0 : -18 }}
+      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: DUR.slow, ease: EASE_SNAP, delay }}
+    >
+      {children}
+    </motion.span>
+  )
+}
+
+/** A brush stroke or underline swept in from the left, like a single pass of the brush. */
+export function Sweep({ children, className, delay = 0 }: { children?: ReactNode; className?: string; delay?: number }) {
+  const reduced = !!useReducedMotion()
+  return (
+    <motion.span
+      aria-hidden="true"
+      className={className}
+      style={{ transformOrigin: 'left center' }}
+      initial={{ scaleX: reduced ? 1 : 0, opacity: reduced ? 0 : 1 }}
+      whileInView={{ scaleX: 1, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, ease: EASE_CALM, delay }}
+    >
+      {children}
+    </motion.span>
+  )
+}
+
+/** A paper note pressed onto the page: drops in tilted, then settles at its resting angle. */
+export function Stick({
+  children,
+  className,
+  rest = 1,
+  delay = 0,
+}: {
+  children: ReactNode
+  className?: string
+  /** resting tilt in degrees */
+  rest?: number
+  delay?: number
+}) {
+  const reduced = !!useReducedMotion()
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: reduced ? 0 : -16, rotate: reduced ? rest : rest + 5, scale: reduced ? 1 : 1.05 }}
+      whileInView={{ opacity: 1, y: 0, rotate: rest, scale: 1 }}
+      whileHover={reduced ? undefined : { rotate: rest * -0.4, y: -3 }}
+      viewport={{ once: true }}
+      transition={{ duration: DUR.slow, ease: EASE_SNAP, delay }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 export { motion, useReducedMotion }

@@ -42,7 +42,7 @@ export default function PlaceholderView(props: {
       <PageHead {...props} />
       <div className="wrap mt-8">
         <Reveal>
-          <div className="note max-w-xl p-6">
+          <div className="torn-wrap relative max-w-xl"><span className="tape -top-2.5 right-8 z-10 rotate-6" aria-hidden="true" /><div className="torn bg-parchment px-7 py-9">
             <p className="label">Being typeset</p>
             <p className="mt-2">
               This page is built in {props.phase}. The header, footer, ticker and page transitions are already live, so
@@ -51,7 +51,7 @@ export default function PlaceholderView(props: {
             <Link to="/" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
               Back to the front page <span aria-hidden="true" className="ml-1.5">⟶</span>
             </Link>
-          </div>
+          </div></div>
         </Reveal>
       </div>
     </>

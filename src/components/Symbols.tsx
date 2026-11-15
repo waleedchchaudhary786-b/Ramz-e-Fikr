@@ -1,6 +1,8 @@
 /* The brand's punctuation set, defined once. Drawn from print tradition.
    Use these for bullets, dividers, stamps and "next" affordances only. */
 import type { ReactNode } from 'react'
+import { Sweep } from '../utils/motion'
+import { Scribble } from './Doodles'
 
 export const SYMBOL = {
   hand: '☞', // points at the key idea ("Latest Ramz"), articles
@@ -56,13 +58,16 @@ export function SectionHead({
   action?: ReactNode
 }) {
   return (
-    <div className="mb-5 flex items-end justify-between gap-4 border-b border-ink/70 pb-3">
+    <div className="mb-4 flex items-end justify-between gap-4">
       <div>
         <h2 className="text-2xl font-bold md:text-[1.75rem]">
           <Sym name={symbol} className="mr-2" />
           {title}
         </h2>
-        {purpose && <p className="meta mt-1">{purpose}</p>}
+        <Sweep className="mt-1 block h-3 w-40 text-oxblood" delay={0.15}>
+          <Scribble className="h-full w-full" />
+        </Sweep>
+        {purpose && <p className="meta mt-1.5">{purpose}</p>}
       </div>
       {action}
     </div>
@@ -77,6 +82,10 @@ export function InkFilters() {
         <filter id="ink-bleed" x="-5%" y="-10%" width="110%" height="120%">
           <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
           <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" />
+        </filter>
+        <filter id="sketch" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" />
         </filter>
         <filter id="brush" x="-5%" y="-20%" width="110%" height="140%">
           <feTurbulence type="fractalNoise" baseFrequency="0.02 0.35" numOctaves="3" seed="8" result="n" />
