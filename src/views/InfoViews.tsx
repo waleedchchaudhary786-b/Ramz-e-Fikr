@@ -52,7 +52,7 @@ export function AboutView() {
             <p className="meta mt-1">Short answers. Open the one you need.</p>
             <div className="mt-4">
               {GUIDE.map(([q, a], i) => (
-                <Fold key={q} defaultOpen={i === 0} summary={<span className="font-display text-lg font-bold">{q}</span>}>
+                <Fold key={q} index={String(i + 1).padStart(2, '0')} defaultOpen={i === 0} summary={<span className="font-display text-lg font-bold">{q}</span>}>
                   <p className="measure text-charcoal">{a}</p>
                 </Fold>
               ))}

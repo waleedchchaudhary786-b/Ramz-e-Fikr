@@ -140,11 +140,23 @@ export default function MotionsView() {
 }
 
 const LENGTHS = [7, 15, 30] as const
+const ROW_PX = 116 // height of one motion in the draw window; must match h-[116px] below
+
+function ReelRow({ m }: { m: Motion }) {
+  return (
+    <div className="flex h-[116px] flex-col justify-center">
+      <p className="line-clamp-3 font-display text-[1.375rem] leading-snug font-bold">{m.text}</p>
+      <p className="meta mt-1">
+        {m.format} · {m.theme}
+      </p>
+    </div>
+  )
+}
 
 function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => void }) {
   const reduced = !!useReducedMotion()
   const [shown, setShown] = useState(chosen)
-  const [drawing, setDrawing] = useState(false)
+  const [reel, setReel] = useState<Motion[] | null>(null)
   const [mins, setMins] = useState<(typeof LENGTHS)[number]>(15)
   const [left, setLeft] = useState(15 * 60)
   const [running, setRunning] = useState(false)
@@ -155,26 +167,17 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
 
   useEffect(() => setShown(chosen), [chosen])
 
-  // the draw: flick through motions like cards, then land on one
+  // the draw: a reel of motions scrolls past in one smooth movement and settles on the pick
   function draw() {
-    if (drawing) return
-    const pick = allMotions[Math.floor(Math.random() * allMotions.length)]
+    if (reel) return
+    const others = allMotions.filter((m) => m.slug !== shown.slug)
+    const pick = others[Math.floor(Math.random() * others.length)]
     if (reduced) {
       onDraw(pick)
       return
     }
-    setDrawing(true)
-    let n = 0
-    const id = window.setInterval(() => {
-      n += 1
-      setShown(allMotions[Math.floor(Math.random() * allMotions.length)])
-      if (n >= 9) {
-        window.clearInterval(id)
-        setDrawing(false)
-        onDraw(pick)
-        setShown(pick)
-      }
-    }, 85)
+    const filler = Array.from({ length: 7 }, () => allMotions[Math.floor(Math.random() * allMotions.length)])
+    setReel([shown, ...filler, pick])
   }
 
   useEffect(() => {
@@ -199,25 +202,32 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
           <Sym name="pilcrow" className="mr-1.5" />
           On the desk
         </p>
-        <div className="mt-3 min-h-[5.5rem] overflow-hidden">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.p
-              key={shown.slug + (drawing ? Math.random() : '')}
-              initial={{ opacity: 0, y: reduced ? 0 : 22, rotate: reduced ? 0 : 2 }}
-              animate={{ opacity: 1, y: 0, rotate: 0 }}
-              exit={{ opacity: 0, y: reduced ? 0 : -22 }}
-              transition={{ duration: drawing ? 0.08 : DUR.slow, ease: EASE_SNAP }}
-              className="font-display text-[1.375rem] leading-snug font-bold"
-              aria-live="polite"
+        {/* a fixed window: every row is the same height, so nothing jumps */}
+        <div className="mt-3 h-[116px] overflow-hidden" aria-live="polite">
+          {reel ? (
+            <motion.div
+              key="reel"
+              initial={{ y: 0 }}
+              animate={{ y: -(reel.length - 1) * ROW_PX }}
+              transition={{ duration: 1.3, ease: [0.16, 0.84, 0.3, 1] }}
+              onAnimationComplete={() => {
+                const pick = reel[reel.length - 1]
+                setShown(pick)
+                onDraw(pick)
+                setReel(null)
+              }}
             >
-              {shown.text}
-            </motion.p>
-          </AnimatePresence>
+              {reel.map((m, i) => (
+                <ReelRow key={i} m={m} />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div key={shown.slug} initial={{ opacity: 0.4 }} animate={{ opacity: 1 }} transition={{ duration: DUR.base }}>
+              <ReelRow m={shown} />
+            </motion.div>
+          )}
         </div>
-        <p className="meta mt-2">
-          {shown.format} · {shown.theme}
-        </p>
-        <button type="button" onClick={draw} disabled={drawing} className="btn btn-ghost mt-4">
+        <button type="button" onClick={draw} disabled={!!reel} className="btn btn-ghost mt-3">
           <Shuffle size={16} aria-hidden="true" /> Draw a random motion
         </button>
 

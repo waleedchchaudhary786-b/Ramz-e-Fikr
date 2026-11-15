@@ -2,6 +2,7 @@ import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Brand } from './Navbar'
 import { Seal } from './Doodles'
+import { Fold } from './Bits'
 
 type Item = { to: string; label: string } | { label: string; onClick: () => void }
 type Col = { title: string; items: Item[] }
@@ -87,24 +88,15 @@ export default function Footer() {
           {/* mobile: accordions */}
           <div className="md:hidden">
             {cols.map((c) => (
-              <details key={c.title} className="group border-t border-border-warm last:border-b">
-                <summary className="label flex min-h-12 cursor-pointer list-none items-center justify-between !font-bold !text-ink [&::-webkit-details-marker]:hidden">
-                  {c.title}
-                  <span
-                    aria-hidden="true"
-                    className="font-sans text-lg text-oxblood transition-transform duration-200 group-open:rotate-45"
-                  >
-                    +
-                  </span>
-                </summary>
-                <ul className="pb-2">
+              <Fold key={c.title} summary={<span className="label !font-bold !text-ink">{c.title}</span>}>
+                <ul>
                   {c.items.map((it) => (
                     <li key={it.label}>
                       <ItemLink item={it} />
                     </li>
                   ))}
                 </ul>
-              </details>
+              </Fold>
             ))}
           </div>
         </div>

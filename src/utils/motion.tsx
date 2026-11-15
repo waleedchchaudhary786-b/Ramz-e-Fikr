@@ -82,7 +82,10 @@ export function RevealItem({ children, className }: { children: ReactNode; class
 export function PageTransition({ pageKey, children }: { pageKey: string; children: ReactNode }) {
   const reduced = !!useReducedMotion()
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    /* No initial={false} here: it would tell every element on the first page
+       loaded to skip its entrance, and anything mounted later on that page
+       (the motion draw, pop-in icons) would appear without animating. */
+    <AnimatePresence mode="wait">
       <motion.div
         key={pageKey}
         initial={{ opacity: 0, y: reduced ? 0 : 10 }}

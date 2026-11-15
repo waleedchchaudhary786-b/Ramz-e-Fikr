@@ -262,37 +262,68 @@ export function DateFilter({
   )
 }
 
-/** An accordion row whose body unfolds like a sheet of paper. */
-export function Fold({ summary, children, defaultOpen = false }: { summary: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean }) {
+/* An answer that opens and closes. The panel stays mounted and its height is
+   animated both ways, so closing is as smooth as opening. The plus sign folds
+   into a minus, an oxblood rule grows down the left edge, and the text rises in. */
+export function Fold({
+  summary,
+  children,
+  defaultOpen = false,
+  index,
+}: {
+  summary: React.ReactNode
+  children: React.ReactNode
+  defaultOpen?: boolean
+  /** optional number shown before the question, e.g. "01" */
+  index?: string
+}) {
   const reduced = !!useReducedMotion()
   const [open, setOpen] = useState(defaultOpen)
+  const dur = reduced ? 0 : 0.38
   return (
-    <div className="border-b border-border-warm">
+    <div className="relative border-b border-border-warm pl-4">
+      <motion.span
+        aria-hidden="true"
+        className="absolute top-0 bottom-0 left-0 w-[3px] origin-top bg-oxblood"
+        initial={false}
+        animate={{ scaleY: open ? 1 : 0 }}
+        transition={{ duration: dur, ease: EASE_CALM }}
+      />
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex min-h-12 w-full items-center justify-between gap-4 py-3 text-left"
+        className="group flex min-h-14 w-full items-center gap-4 py-3 text-left"
       >
-        <span className="min-w-0 flex-1">{summary}</span>
-        <span aria-hidden="true" className="font-sans text-xl text-oxblood transition-transform duration-300" style={{ transform: open ? 'rotate(45deg)' : 'none' }}>
-          +
+        {index && <span className="font-mono text-sm font-bold text-gold">{index}</span>}
+        <span className={`min-w-0 flex-1 transition-colors duration-300 ${open ? 'text-oxblood' : ''}`}>{summary}</span>
+        <span
+          aria-hidden="true"
+          className={`relative grid h-8 w-8 shrink-0 place-items-center border-[1.5px] border-oxblood transition-colors duration-300 ${
+            open ? 'bg-oxblood text-ivory' : 'text-oxblood group-hover:bg-parchment'
+          }`}
+        >
+          <span className="absolute h-[2px] w-3.5 bg-current" />
+          <span className="absolute h-3.5 w-[2px] bg-current transition-transform duration-300" style={{ transform: open ? 'scaleY(0)' : 'scaleY(1)' }} />
         </span>
       </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            style={{ transformOrigin: 'top center' }}
-            initial={{ opacity: 0, scaleY: reduced ? 1 : 0.6, y: reduced ? 0 : -6 }}
-            animate={{ opacity: 1, scaleY: 1, y: 0 }}
-            exit={{ opacity: 0, scaleY: reduced ? 1 : 0.8 }}
-            transition={{ duration: DUR.base, ease: EASE_CALM }}
-            className="pb-4"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        initial={false}
+        animate={{ height: open ? 'auto' : 0 }}
+        transition={{ duration: dur, ease: EASE_CALM }}
+        style={{ overflow: 'hidden' }}
+        aria-hidden={!open}
+        inert={!open}
+      >
+        <motion.div
+          initial={false}
+          animate={{ opacity: open ? 1 : 0, y: open || reduced ? 0 : -8 }}
+          transition={{ duration: dur * 0.8, ease: EASE_CALM, delay: open ? dur * 0.25 : 0 }}
+          className="pt-1 pb-5"
+        >
+          {children}
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

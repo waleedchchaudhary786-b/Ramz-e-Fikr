@@ -543,3 +543,7 @@ a:hover .seal {
   border-radius: 50%;
   backface-visibility: hidden;
 }
+
+.font-hand {
+  font-family: var(--font-hand);
+}

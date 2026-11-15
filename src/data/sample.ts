@@ -182,31 +182,93 @@ export const pastPrompts = [
 ]
 
 /* ---------- resource pages (sample text) ---------- */
-export type ResourceSection = { heading: string; points: string[] }
-export const resourceBodies: Record<string, ResourceSection[]> = {
-  'first-principles-casebuilding': [
-    { heading: 'Minutes 0 to 5: what is this debate about?', points: ['Rewrite the motion in your own words, in one sentence.', 'Name who is affected and what changes for them.', 'Write down what your side must prove to win. That is your burden.'] },
-    { heading: 'Minutes 5 to 12: two arguments, not five', points: ['For each argument write claim, mechanism, impact on three separate lines.', 'If you cannot write the mechanism, you do not have an argument yet.', 'Pick one example per argument that a stranger would believe.'] },
-    { heading: 'Minutes 12 to 15: their best case', points: ['Write the strongest thing the other side will say.', 'Prepare one answer to it, and decide who delivers it.'] },
-  ],
-  'weighing-worksheet': [
-    { heading: 'Fill in for your impact, then theirs', points: ['Scale: how many people, and how badly?', 'Likelihood: how sure are we that it happens?', 'Reversibility: can it be undone later?'] },
-    { heading: 'Then say it out loud', points: ['"Even if they are right about X, our impact matters more because…"', 'Use one of the three rows above as the reason, not all three.'] },
-  ],
-  'pk-economy-casefile': [
-    { heading: 'Background', points: ['What a programme is, what conditions are, and who signs.', 'The difference between stabilisation and growth.'] },
-    { heading: 'Clashes that keep coming up', points: ['Short-term pain against long-term credibility.', 'Who bears the cost of subsidy removal.', 'Whether conditions would have been needed anyway.'] },
-  ],
-  'poi-drills': [
-    { heading: 'Offering', points: ['Fifteen words or fewer. Practise with a partner counting.', 'Ask a question the speaker cannot answer in one word.'] },
-    { heading: 'Taking', points: ['Finish your sentence first, then accept.', 'Answer in two sentences and return to your signpost by name.'] },
-  ],
-  'adjudication-notes': [
-    { heading: 'What the panel talks about', points: ['Which clashes decided the round, in order.', 'Who won each clash and why, in the debaters’ own words.'] },
-    { heading: 'What that means for you', points: ['Tell the judge which clash matters most. They are looking for it anyway.', 'Arguments nobody answered are not automatically won; they still need weighing.'] },
-  ],
-  'smog-casefile': [
-    { heading: 'Sources of the problem', points: ['Crop burning, vehicles, brick kilns and industry: learn rough shares before quoting them.', 'Why the season peaks in November.'] },
-    { heading: 'Usual clashes', points: ['School closures against factory closures.', 'Provincial action against cross-border causes.', 'Enforcement capacity against new laws.'] },
-  ],
+export type ResourceSection = { heading: string; body?: string; points: string[] }
+export type ResourceDetail = {
+  level: 'Novice' | 'Intermediate' | 'Any level'
+  time: string
+  /** when to reach for this resource */
+  useWhen: string
+  intro: string
+  sections: ResourceSection[]
+  example?: { title: string; lines: string[] }
+  mistakes: string[]
+}
+
+export const resourceDetails: Record<string, ResourceDetail> = {
+  'first-principles-casebuilding': {
+    level: 'Novice',
+    time: '15 minutes of prep',
+    useWhen: 'You have a motion you know nothing about and a clock running.',
+    intro: 'Most weak cases are not short of ideas. They are short of structure: five half-arguments where two whole ones would win. This method spends the first third of prep on understanding the debate, the middle on building exactly two arguments, and the end on the other side.',
+    sections: [
+      { heading: 'Minutes 0 to 5: what is this debate about?', body: 'Do not write arguments yet. A team that agrees on what the debate is about will out-prepare a team that started writing at minute one.', points: ['Rewrite the motion in your own words, in one sentence.', 'Name who is affected and what changes for them.', 'Write down what your side must prove to win. That is your burden.', 'Agree a one-line answer to "why now?"'] },
+      { heading: 'Minutes 5 to 12: two arguments, not five', body: 'Each argument gets three lines and no more. If a line is empty, the argument is not ready.', points: ['Claim: what is true?', 'Mechanism: why does it happen, step by step?', 'Impact: who is better or worse off, and how much?', 'One example a stranger would believe.'] },
+      { heading: 'Minutes 12 to 15: their best case', body: 'Spend the last three minutes on the other bench. It is the cheapest rebuttal you will ever prepare.', points: ['Write the strongest thing the other side will say.', 'Prepare one answer to it, and decide who delivers it.', 'Decide the order of speakers and who takes which argument.'] },
+    ],
+    example: { title: 'Worked example: "This House would cap academy fees"', lines: ['Burden (Prop): a cap makes tuition fairer without destroying supply.', 'Claim: fees are set by parental fear, not by cost.', 'Mechanism: exam pressure, little information, so parents pay whatever is asked.', 'Impact: low-income families either overspend or drop out of the race.', 'Their best case: capped academies close or go informal. Our answer: cap at a level tied to verified costs.'] },
+    mistakes: ['Starting to write arguments before agreeing what the debate is about.', 'Five arguments with no mechanisms.', 'Examples only your own city would recognise.'],
+  },
+  'weighing-worksheet': {
+    level: 'Intermediate',
+    time: '5 minutes, mid-round',
+    useWhen: 'Both sides have landed an argument and the judge needs a reason to prefer yours.',
+    intro: 'Weighing is the part of a speech where you stop proving your argument is true and start proving it matters more. Most close rounds are decided here, and most speakers skip it. The worksheet gives you three questions to ask of both impacts.',
+    sections: [
+      { heading: 'Fill in for your impact, then theirs', body: 'Be honest in the second column. If you write their impact as smaller than it is, your weighing will not survive their next speech.', points: ['Scale: how many people, and how badly?', 'Likelihood: how sure are we that it happens?', 'Reversibility: can it be undone later?', 'Timeframe: does it happen now, or in ten years?'] },
+      { heading: 'Pick one row and say it out loud', body: 'You win weighing on one comparison made clearly, not on four made quickly.', points: ['"Even if they are right about X, our impact matters more because…"', 'Use one of the rows above as the reason, not all of them.', 'Say what the judge should do with it: "so prefer our side on this clash."'] },
+      { heading: 'When they weigh back', points: ['Do not repeat your row. Answer theirs, then return to yours.', 'If they win scale, contest likelihood. If they win likelihood, contest reversibility.'] },
+    ],
+    example: { title: 'Worked example: smog shutdowns', lines: ['Our impact: children miss three weeks of school a year.', 'Their impact: factory workers lose wages on shutdown days.', 'Row chosen: reversibility. Lost wages can be compensated; a lost month of early schooling is much harder to give back.'] },
+    mistakes: ['Weighing only your own impact.', 'Saying "our impact is bigger" with no reason.', 'Leaving weighing to the last ten seconds.'],
+  },
+  'pk-economy-casefile': {
+    level: 'Intermediate',
+    time: '20 minutes to read',
+    useWhen: 'An economics motion about Pakistan comes up and you need the shape of the argument fast.',
+    intro: 'This casefile is a map, not a script. It sets out what each bench usually argues about an IMF programme and where the two sides actually collide, so that your prep time goes on the clash and not on background.',
+    sections: [
+      { heading: 'Background you need', body: 'Learn the vocabulary first; half of these debates are lost on a muddled definition.', points: ['What a programme is, what conditions are, and who signs.', 'The difference between stabilisation (stopping a crisis) and growth (getting richer).', 'Why subsidies, the exchange rate and tax collection keep appearing in conditions.'] },
+      { heading: 'What Proposition benches usually run', points: ['Credibility: lenders and investors return once a programme is in place.', 'Discipline: conditions force reforms that governments avoid on their own.', 'No alternative: the other sources of money come with worse terms.'] },
+      { heading: 'What Opposition benches usually run', points: ['Burden: the cost of adjustment falls on those least able to pay.', 'Cycle: repeated programmes suggest the cure does not work.', 'Sovereignty: policy is set by lenders, not voters.'] },
+      { heading: 'Clashes that keep coming up', points: ['Short-term pain against long-term credibility.', 'Who bears the cost of subsidy removal.', 'Whether the reforms would have been needed anyway.'] },
+    ],
+    mistakes: ['Quoting figures you cannot source. Say "roughly" or leave the number out.', 'Treating the lender as a villain or a saviour; judges reward the mechanism.', 'Forgetting to say what happens without a programme.'],
+  },
+  'poi-drills': {
+    level: 'Any level',
+    time: '10 minutes per drill',
+    useWhen: 'Your team goes quiet during the other side\u2019s speeches, or loses its thread when interrupted.',
+    intro: 'Points of information are a skill you can train like any other, in pairs, in ten minutes. These drills are grouped by which half of the exchange they practise.',
+    sections: [
+      { heading: 'Offering', body: 'A good POI is a question the speaker would rather not answer, short enough that they cannot wave it away.', points: ['Fifteen words or fewer. Partner counts on their fingers.', 'Ask a question the speaker cannot answer in one word.', 'Stand, say "on that point", and sit the moment you are declined.', 'Drill: partner reads any paragraph aloud; you offer three POIs in two minutes.'] },
+      { heading: 'Taking', body: 'You are in charge of your own speech. Take a point when it suits you, not when it suits them.', points: ['Finish your sentence first, then accept.', 'Answer in two sentences and return to your signpost by name.', 'Take two in a seven-minute speech; decline the rest politely.', 'Drill: speak for three minutes on anything; partner interrupts every thirty seconds.'] },
+      { heading: 'As a team', points: ['Agree who offers on which argument before the speech starts.', 'Pass a note, not a whisper.'] },
+    ],
+    mistakes: ['A POI that is really a speech.', 'Accepting mid-sentence and losing the argument you were making.', 'Offering every ten seconds; it reads as barracking.'],
+  },
+  'adjudication-notes': {
+    level: 'Any level',
+    time: '10 minutes to read',
+    useWhen: 'You keep losing rounds you thought you won.',
+    intro: 'Debaters imagine that judges score speeches. Mostly they do not. They identify the two or three places where the sides disagreed, decide who won each, and then decide which of those mattered most. Once you know that is the conversation, you can write your speech for it.',
+    sections: [
+      { heading: 'What the panel talks about', points: ['Which clashes decided the round, in order.', 'Who won each clash and why, in the debaters\u2019 own words.', 'Whether a team did what its role required (opening, closing, whip).'] },
+      { heading: 'What the panel does not talk about', points: ['Who sounded most confident.', 'Arguments that were asserted but never explained.', 'Things a speaker clearly knew but did not say.'] },
+      { heading: 'What that means for your speech', body: 'Make the judge\u2019s job easy and they will tend to write down your version of the round.', points: ['Tell the judge which clash matters most. They are looking for it anyway.', 'Use the same names for arguments that your partner used.', 'Arguments nobody answered are not automatically won; they still need weighing.'] },
+    ],
+    mistakes: ['Assuming the judge filled in your missing step.', 'Arguing with the decision instead of asking for one thing to fix.'],
+  },
+  'smog-casefile': {
+    level: 'Novice',
+    time: '15 minutes to read',
+    useWhen: 'Any environment or public-health motion set in Punjab.',
+    intro: 'Smog motions come up every winter. This casefile gives you the causes, the usual policy options and the clashes, so you can spend prep on argument and not on trying to remember what a brick kiln has to do with it.',
+    sections: [
+      { heading: 'Sources of the problem', body: 'Be careful with shares: they vary by study and by month. Describe the sources; do not invent percentages.', points: ['Crop residue burning after the rice harvest.', 'Vehicle exhaust, especially older diesel engines.', 'Brick kilns and small industry.', 'Weather: cold, still air traps what is emitted, which is why it peaks in November.'] },
+      { heading: 'Policy options that get debated', points: ['Closing schools and offices on the worst days.', 'Shutting or converting kilns and factories.', 'Paying farmers not to burn, or supplying machinery.', 'Restricting vehicles by age, type or day.'] },
+      { heading: 'Usual clashes', points: ['School closures against factory closures: whose loss is easier to repair?', 'Provincial action against causes that cross the border.', 'New laws against the capacity to enforce the ones that exist.'] },
+    ],
+    example: { title: 'A framing line you can borrow', lines: ['"This debate is not about whether smog is bad. It is about who should pay to reduce it, and whether they can."'] },
+    mistakes: ['Making up statistics.', 'Blaming a single source.', 'Ignoring enforcement: a ban nobody enforces is not a policy.'],
+  },
 }

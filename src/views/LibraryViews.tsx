@@ -7,7 +7,8 @@ import { PageHead } from './PlaceholderView'
 import { Link, useRouter } from '../utils/router'
 import { Reveal, Stick } from '../utils/motion'
 import { Divider, Sym } from '../components/Symbols'
-import { allResources, formatDate, glossary, resourceBodies } from '../data/sample'
+import { Scribble } from '../components/Doodles'
+import { allResources, formatDate, glossary, resourceDetails } from '../data/sample'
 
 const KINDS = ['Guide', 'Casefile', 'Worksheet', 'Lecture notes'] as const
 const TILTS = ['-1.2deg', '0.9deg', '-0.5deg', '1.4deg', '-0.9deg', '0.6deg']
@@ -118,6 +119,29 @@ export function GlossaryView() {
   )
 }
 
+/** A point you can tick off as you work through it. */
+function Tick({ text }: { text: string }) {
+  const [done, setDone] = useState(false)
+  return (
+    <li>
+      <button type="button" aria-pressed={done} onClick={() => setDone((d) => !d)} className="group flex w-full gap-3 py-1 text-left text-[1.0625rem] leading-relaxed">
+        <span className="relative mt-1.5 grid h-5 w-5 shrink-0 place-items-center border-[1.5px] border-oxblood">
+          <motion.span
+            aria-hidden="true"
+            className="font-hand text-2xl leading-none font-bold text-oxblood"
+            initial={false}
+            animate={{ scale: done ? 1 : 0, rotate: done ? 0 : -30 }}
+            transition={{ duration: DUR.base, ease: EASE_SNAP }}
+          >
+            ✓
+          </motion.span>
+        </span>
+        <span className={`measure transition-opacity duration-300 ${done ? 'opacity-50' : ''}`}>{text}</span>
+      </button>
+    </li>
+  )
+}
+
 function ResourceReader({ slug }: { slug: string }) {
   const r = allResources.find((x) => x.slug === slug)
   if (!r)
@@ -131,7 +155,7 @@ function ResourceReader({ slug }: { slug: string }) {
         </div>
       </>
     )
-  const sections = resourceBodies[slug] ?? []
+  const d = resourceDetails[slug]
   const others = allResources.filter((x) => x.slug !== slug).slice(0, 2)
   return (
     <article className="wrap pt-10 md:pt-14">
@@ -152,29 +176,83 @@ function ResourceReader({ slug }: { slug: string }) {
           </div>
         </Stick>
 
-        <div className="ledger mt-12">
-          {sections.map((sec, i) => (
-            <Reveal key={sec.heading}>
-              <section className="ledger-row mb-10">
-                <div className="margin-no" aria-hidden="true">
-                  <span className="numeral block text-5xl">{String(i + 1).padStart(2, '0')}</span>
-                </div>
-                <h2 className="text-2xl font-bold">{sec.heading}</h2>
-                <ul className="mt-3 space-y-2.5">
-                  {sec.points.map((pt) => (
-                    <li key={pt} className="flex gap-3 text-[1.0625rem] leading-relaxed">
-                      <Sym name="hand" className="shrink-0" />
-                      <span className="measure">{pt}</span>
+        {d ? (
+          <>
+            <Reveal>
+              <dl className="mt-10 grid gap-5 border-y border-ink/70 py-5 sm:grid-cols-3">
+                {[
+                  ['Level', d.level],
+                  ['Time', d.time],
+                  ['Use it when', d.useWhen],
+                ].map(([k, v]) => (
+                  <div key={k}>
+                    <dt className="label">{k}</dt>
+                    <dd className="mt-1 text-[0.9375rem]">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="measure mt-8 text-[1.0625rem] leading-[1.8] first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.85] first-letter:font-black first-letter:text-oxblood">
+                {d.intro}
+              </p>
+            </Reveal>
+
+            <div className="ledger mt-12">
+              {d.sections.map((sec, i) => (
+                <Reveal key={sec.heading}>
+                  <section className="ledger-row mb-10">
+                    <div className="margin-no" aria-hidden="true">
+                      <span className="numeral block text-5xl">{String(i + 1).padStart(2, '0')}</span>
+                    </div>
+                    <h2 className="text-2xl font-bold">{sec.heading}</h2>
+                    <Scribble className="mt-1 block h-2.5 w-28 text-oxblood" />
+                    {sec.body && <p className="measure mt-3 text-[1.0625rem] leading-[1.8] text-charcoal">{sec.body}</p>}
+                    <ul className="mt-3">
+                      {sec.points.map((pt) => (
+                        <Tick key={pt} text={pt} />
+                      ))}
+                    </ul>
+                  </section>
+                </Reveal>
+              ))}
+            </div>
+            <p className="hand -mt-3 -rotate-1 text-xl text-oxblood">tick the boxes as you go ↑</p>
+
+            {d.example && (
+              <Stick rest={0.8} className="torn-wrap relative mt-12">
+                <span className="tape -top-2.5 right-10 z-10 rotate-6" aria-hidden="true" />
+                <section className="torn bg-parchment px-7 py-9">
+                  <h2 className="hand text-3xl text-oxblood">{d.example.title}</h2>
+                  <ul className="mt-3 space-y-2">
+                    {d.example.lines.map((l) => (
+                      <li key={l} className="flex gap-3">
+                        <Sym name="hand" className="shrink-0" />
+                        <span>{l}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              </Stick>
+            )}
+
+            <Reveal>
+              <section className="mt-12 border-t-2 border-oxblood pt-4">
+                <h2 className="label !font-bold !text-ink">Common mistakes</h2>
+                <ul className="mt-3 space-y-2">
+                  {d.mistakes.map((m) => (
+                    <li key={m} className="flex gap-3 text-[1.0625rem]">
+                      <Sym name="dagger" className="shrink-0" />
+                      <span className="measure">{m}</span>
                     </li>
                   ))}
                 </ul>
               </section>
             </Reveal>
-          ))}
-          {sections.length === 0 && <p className="meta">The full text of this resource has not been added yet.</p>}
-        </div>
+          </>
+        ) : (
+          <p className="meta mt-10">The full text of this resource has not been added yet.</p>
+        )}
 
-        <div className="mt-2">
+        <div className="mt-8">
           <Reaction kind="bookmark" itemKey={`resource:${slug}`} />
         </div>
 
