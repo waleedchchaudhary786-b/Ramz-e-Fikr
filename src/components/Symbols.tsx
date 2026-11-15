@@ -1,7 +1,7 @@
 /* The brand's punctuation set, defined once. Drawn from print tradition.
    Use these for bullets, dividers, stamps and "next" affordances only. */
 import type { ReactNode } from 'react'
-import { Sweep } from '../utils/motion'
+import { Doodle, Sweep } from '../utils/motion'
 import { Scribble } from './Doodles'
 
 export const SYMBOL = {
@@ -34,7 +34,9 @@ export function Divider({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center gap-4 ${className}`} role="separator">
       <span className="h-px flex-1 bg-border-warm" />
-      <Sym name="asterism" tone="gold" className="text-lg leading-none" />
+      <Doodle className="block">
+        <Sym name="asterism" tone="gold" className="text-xl leading-none" />
+      </Doodle>
       <span className="h-px flex-1 bg-border-warm" />
     </div>
   )

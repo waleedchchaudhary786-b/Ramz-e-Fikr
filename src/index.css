@@ -282,3 +282,74 @@
   border-left: 1px dashed color-mix(in srgb, var(--color-ivory) 70%, transparent);
   border-right: 1px dashed color-mix(in srgb, var(--color-ivory) 70%, transparent);
 }
+
+/* ---- small poster motions (transform and opacity only) ---- */
+
+/* "boil": hand-drawn lines redrawn a few times a second, like stop-motion */
+@keyframes boil {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  33% { transform: rotate(2.5deg) translate(0.6px, -0.4px); }
+  66% { transform: rotate(-2deg) translate(-0.5px, 0.5px); }
+}
+.boil {
+  animation: boil 1.5s steps(1, end) infinite;
+  transform-origin: center;
+}
+
+/* the pen scribbles when its card is hovered */
+@keyframes write {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-7px, 5px) rotate(-7deg); }
+  40% { transform: translate(-1px, 2px) rotate(3deg); }
+  60% { transform: translate(-9px, 7px) rotate(-8deg); }
+  80% { transform: translate(-3px, 3px) rotate(2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.group:hover .pen-write {
+  animation: write 0.8s var(--ease-calm);
+}
+
+/* arrows lean forward on hover */
+.arrow {
+  display: inline-block;
+  transition: transform 0.25s var(--ease-snap);
+}
+a:hover .arrow,
+button:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* list rows: a pointing hand slides in and the text makes room */
+.row {
+  position: relative;
+  display: block;
+}
+.row-hand {
+  position: absolute;
+  left: 0;
+  top: 0.95rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s var(--ease-calm), transform 0.3s var(--ease-snap);
+}
+.row-body {
+  transition: transform 0.3s var(--ease-snap);
+}
+
+@media (hover: hover) {
+  /* cards lift off the page toward the top-left, away from their shadow */
+  .card {
+    transition: transform 0.25s var(--ease-snap);
+  }
+  a.card:hover,
+  button.card:hover {
+    transform: translate(-3px, -3px);
+  }
+  .row:hover .row-hand {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .row:hover .row-body {
+    transform: translateX(1.6rem);
+  }
+}

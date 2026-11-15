@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Doodle, Pressable, Reveal, RevealItem, Stick, Sweep, TypeReveal } from '../utils/motion'
+import { Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
@@ -31,15 +31,13 @@ export default function HomeView() {
               </RevealItem>
               <RevealItem>
                 <h1 className="mt-4 text-[2.5rem] font-black sm:text-5xl md:text-6xl">
-                  Where thought becomes{' '}
+                  <WordReveal text="Where thought becomes" delay={0.15} />{' '}
                   <span className="relative inline-block px-3 text-ivory">
                     <Sweep
                       className="absolute inset-x-0 top-[12%] bottom-[2%] block -rotate-1 bg-oxblood [filter:url(#brush)]"
                       delay={0.45}
                     />
-                    <span className="relative italic" style={{ filter: 'none' }}>
-                      argument.
-                    </span>
+                    <WordReveal className="relative italic" text="argument." delay={0.6} />
                     <Doodle className="absolute -top-5 -right-7 block text-oxblood" delay={0.95}>
                       <Sparks size={30} style={{ transform: 'rotate(150deg)' }} />
                     </Doodle>
@@ -54,7 +52,7 @@ export default function HomeView() {
               <RevealItem className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Pressable>
                   <Link to="/motions" className="btn btn-primary">
-                    Browse the motions <span aria-hidden="true">⟶</span>
+                    Browse the motions <span aria-hidden="true" className="arrow">⟶</span>
                   </Link>
                 </Pressable>
                 <Link to="/articles" className="link-underline pb-0.5 font-bold text-oxblood">
@@ -84,7 +82,7 @@ export default function HomeView() {
                   </p>
                   <Scribble className="my-4 block h-2.5 w-full text-border-warm" />
                   <Link to="/motions" className="inline-flex min-h-11 items-center text-sm font-bold text-oxblood">
-                    Start a 15-minute prep <span aria-hidden="true" className="ml-1.5">⟶</span>
+                    Start a 15-minute prep <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
                   </Link>
                 </aside>
               </Stick>
@@ -110,7 +108,9 @@ export default function HomeView() {
             <Doodle className="absolute top-6 right-7 hidden text-ink md:block" delay={0.3}>
               <Pen size={72} />
             </Doodle>
-            <Stamp className="max-w-full !whitespace-normal">Latest Ramz</Stamp>
+            <StampIn>
+              <Stamp>Latest Ramz</Stamp>
+            </StampIn>
             <p className="measure mt-4 font-display text-lg text-oxblood italic md:text-xl">
               <Sym name="hand" className="mr-2 not-italic" />
               {lead.ramz}
@@ -135,7 +135,9 @@ export default function HomeView() {
           <ul>
             {motions.slice(0, 3).map((m) => (
               <li key={m.slug} className="border-b border-border-warm">
-                <Link to="/motions" className="group block py-4">
+                <Link to="/motions" className="group row py-4">
+                  <Sym name="hand" className="row-hand text-lg" />
+                  <div className="row-body">
                   <p className="font-display text-lg leading-snug font-bold">
                     <span className="misreg" data-text={m.text}>
                       {m.text}
@@ -144,12 +146,13 @@ export default function HomeView() {
                   <p className="meta mt-1.5">
                     {m.format} · {m.theme} · {formatDate(m.date)}
                   </p>
+                  </div>
                 </Link>
               </li>
             ))}
           </ul>
           <Link to="/motions" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-            All motions <span aria-hidden="true" className="ml-1.5">⟶</span>
+            All motions <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
           </Link>
         </Reveal>
 
@@ -167,7 +170,9 @@ export default function HomeView() {
           <ul>
             {resources.slice(0, 3).map((r) => (
               <li key={r.slug} className="border-b border-border-warm">
-                <Link to="/resources" className="group block py-4">
+                <Link to="/resources" className="group row py-4">
+                  <Sym name="hand" className="row-hand text-lg" />
+                  <div className="row-body">
                   <p className="font-display text-lg leading-snug font-bold">
                     <span className="misreg" data-text={r.title}>
                       {r.title}
@@ -177,12 +182,13 @@ export default function HomeView() {
                   <p className="meta mt-1.5">
                     {r.kind} · {formatDate(r.date)}
                   </p>
+                  </div>
                 </Link>
               </li>
             ))}
           </ul>
           <Link to="/resources" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-            All resources <span aria-hidden="true" className="ml-1.5">⟶</span>
+            All resources <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
           </Link>
         </Reveal>
       </section>
@@ -207,7 +213,7 @@ export default function HomeView() {
               The Floor · Prompt of the week
             </p>
             <h2 id="floor-h" className="mt-4 max-w-3xl pr-10 text-3xl font-bold italic md:text-[2.75rem]">
-              “{weeklyPrompt.text}”
+              <WordReveal text={`“${weeklyPrompt.text}”`} />
             </h2>
             <Sweep className="mt-3 block h-3 w-56 max-w-full text-gold" delay={0.35}>
               <Scribble className="h-full w-full" />
@@ -222,7 +228,7 @@ export default function HomeView() {
                   className="btn border-ivory bg-ivory text-oxblood"
                   style={{ boxShadow: '3px 3px 0 var(--color-gold)' }}
                 >
-                  Take the floor <span aria-hidden="true">⟶</span>
+                  Take the floor <span aria-hidden="true" className="arrow">⟶</span>
                 </Link>
               </Pressable>
             </div>

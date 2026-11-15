@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { LayoutDashboard, Menu, X } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
-import { DUR, EASE_CALM, EASE_SNAP, motion, useReducedMotion } from '../utils/motion'
+import { DUR, EASE_CALM, EASE_SNAP, InkProgress, motion, useReducedMotion } from '../utils/motion'
 import { Link, useRouter } from '../utils/router'
 import { useSession } from '../services/session'
 
@@ -111,6 +111,8 @@ export default function Navbar() {
         aria-hidden="true"
       />
 
+      <InkProgress className="absolute inset-x-0 bottom-0 h-[3px] bg-oxblood" />
+
       <AnimatePresence>
         {open && (
           <motion.nav
@@ -133,7 +135,7 @@ export default function Navbar() {
                     }`}
                   >
                     {n.label}
-                    <span aria-hidden="true" className="text-gold">
+                    <span aria-hidden="true" className="arrow text-gold">
                       ⟶
                     </span>
                   </Link>

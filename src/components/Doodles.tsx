@@ -18,7 +18,7 @@ function starPoints(cx: number, cy: number, R: number, r: number, rot = -90) {
 /** Sketched star: drawn twice, slightly off, like a pen going round again. */
 export function Star({ className, style, size = 28 }: P) {
   return (
-    <svg {...base} viewBox="0 0 40 40" width={size} height={size} className={className} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.6">
+    <svg {...base} viewBox="0 0 40 40" width={size} height={size} className={`boil ${className ?? ''}`} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.6">
       <polygon points={starPoints(20, 21, 15, 6.5)} />
       <polygon points={starPoints(20.6, 20.4, 14, 6, -86)} opacity=".55" />
     </svg>
@@ -59,7 +59,7 @@ export function Scribble({ className, style }: Omit<P, 'size'>) {
 /** Fountain pen, drawn at a slant. */
 export function Pen({ className, style, size = 64 }: P) {
   return (
-    <svg {...base} viewBox="0 0 64 64" width={size} height={size} className={className} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.7">
+    <svg {...base} viewBox="0 0 64 64" width={size} height={size} className={`pen-write ${className ?? ''}`} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.7">
       <path d="M44 6 L58 20 L30 48 L16 34 Z" />
       <path d="M40 10 L54 24" />
       <path d="M16 34 L8 56 L30 48" />

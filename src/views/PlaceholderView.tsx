@@ -49,7 +49,7 @@ export default function PlaceholderView(props: {
               you can click around and judge the feel.
             </p>
             <Link to="/" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-              Back to the front page <span aria-hidden="true" className="ml-1.5">⟶</span>
+              Back to the front page <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
             </Link>
           </div></div>
         </Reveal>
@@ -97,7 +97,7 @@ export function SignInPreview() {
                     <span className="block font-display text-lg font-bold capitalize">Preview as {r.role}</span>
                     <span className="text-sm text-charcoal">{r.note}</span>
                   </span>
-                  <span aria-hidden="true" className="text-oxblood">
+                  <span aria-hidden="true" className="arrow text-oxblood">
                     ⟶
                   </span>
                 </button>
