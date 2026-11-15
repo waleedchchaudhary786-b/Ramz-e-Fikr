@@ -48,8 +48,12 @@ for testing. Before launch, add your own sender under **Authentication > SMTP Se
 
    ```
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
-   VITE_SUPABASE_ANON_KEY=the long "anon public" key
+   VITE_SUPABASE_ANON_KEY=the public key
    ```
+
+   The public key is the one Supabase labels **Publishable key** (it starts with `sb_publishable_`)
+   or, on older projects, **anon public**. Supabase's own "Connect" screen shows Next.js instructions
+   with `NEXT_PUBLIC_...` names: ignore those files. This site only needs the two values above.
 
 4. Stop the site if it is running (Ctrl+C in the terminal) and start it again with `npm run dev`.
 
