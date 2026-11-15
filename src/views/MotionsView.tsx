@@ -45,7 +45,9 @@ export default function MotionsView() {
 
   return (
     <>
-      <PageHead symbol="pilcrow" title="Motions" purpose="A bank of motions to practise on, with a random draw and a prep timer." />
+      <PageHead symbol="pilcrow" title="Motions" purpose="A bank of motions to practise on, with a random draw and a prep timer."
+        note="Draw one. Fifteen minutes. On your feet."
+      />
       <div className="wrap grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <div className="flex flex-col gap-3">
@@ -56,7 +58,7 @@ export default function MotionsView() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="smog, schools, unions…"
-                className="mt-1 block min-h-11 w-full border border-border-warm bg-white/60 px-3 font-mono focus:border-oxblood focus:outline-none"
+                className="paper-input mt-1"
               />
             </label>
             <Filter label="Format" options={FORMATS} value={format} onChange={setFormat} />

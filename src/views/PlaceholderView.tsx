@@ -1,4 +1,5 @@
-import { Reveal } from '../utils/motion'
+import { Doodle, Reveal, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
+import { Sparks, Star } from '../components/Doodles'
 import { Link } from '../utils/router'
 import { useSession, type Role } from '../services/session'
 import { Sym, type SymbolName } from '../components/Symbols'
@@ -10,21 +11,51 @@ export function PageHead({
   title,
   purpose,
   info = false,
+  note,
 }: {
   symbol: SymbolName
   title: string
   purpose: string
   info?: boolean
+  /** a short line for the taped note beside the title */
+  note?: string
 }) {
   return (
     <header className={info ? 'zone-info' : ''}>
-      <div className="wrap pt-10 pb-8 md:pt-14">
-        <p className="label">{info ? 'Site information' : 'The archive'}</p>
-        <h1 className="mt-2 text-4xl font-black md:text-5xl">
-          <Sym name={symbol} className="mr-3" />
-          {title}
-        </h1>
-        <p className="measure mt-3 text-lg text-charcoal">{purpose}</p>
+      <div className="wrap relative pt-10 pb-10 md:pt-14">
+        <Doodle className="absolute top-8 right-6 hidden text-ink sm:block" delay={0.5}>
+          <Star size={26} />
+        </Doodle>
+        <Doodle className="absolute top-16 right-16 hidden text-gold sm:block" delay={0.6}>
+          <Star size={16} />
+        </Doodle>
+        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8">
+          <div className="min-w-0">
+            <p>
+              <TypeReveal className="label" text={info ? 'Site information' : 'The archive'} />
+            </p>
+            {/* the title sits on a brush stroke, as on the posters */}
+            <h1 className="relative mt-3 inline-block px-4 py-1 text-4xl font-black text-ivory md:px-5 md:text-5xl">
+              <Sweep className="absolute inset-0 block -rotate-1 bg-oxblood [filter:url(#brush)]" delay={0.1} />
+              <span className="relative">
+                <Sym name={symbol} tone="inherit" className="mr-3 text-gold" />
+                <WordReveal text={title} delay={0.25} />
+              </span>
+              <Doodle className="absolute -top-5 -right-8 block text-oxblood" delay={0.7}>
+                <Sparks size={28} style={{ transform: 'rotate(150deg)' }} />
+              </Doodle>
+            </h1>
+            <p className="measure mt-5 text-lg text-charcoal">{purpose}</p>
+          </div>
+          {note && (
+            <Stick rest={2} delay={0.4} className="torn-wrap relative mr-6 hidden w-60 md:block">
+              <span className="tape -top-2.5 right-8 z-10 rotate-6" aria-hidden="true" />
+              <p className="torn bg-parchment px-5 py-6 font-display text-[1.0625rem] leading-snug text-oxblood italic" style={info ? { background: 'var(--color-ivory)' } : undefined}>
+                {note}
+              </p>
+            </Stick>
+          )}
+        </div>
       </div>
     </header>
   )

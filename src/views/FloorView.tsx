@@ -59,7 +59,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
                       onChange={(e) => setDraft(e.target.value)}
                       rows={3}
                       aria-label="Edit your reply"
-                      className="block w-full border border-border-warm bg-white/60 p-3 focus:border-oxblood focus:outline-none"
+                      className="paper-area"
                     />
                     {blockedEdit && <p className="mt-1 text-sm text-oxblood">Please rephrase: “{blockedEdit}” is not allowed here.</p>}
                     <div className="mt-2 flex gap-2">
@@ -120,7 +120,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
               rows={3}
               maxLength={1200}
               placeholder="Make your case…"
-              className="mt-1 block w-full border border-border-warm bg-white/60 p-3 focus:border-oxblood focus:outline-none"
+              className="paper-area mt-1"
             />
           </label>
           {blocked && (
@@ -152,12 +152,15 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
           </div>
         </form>
       ) : (
-        <p className="mt-5 border border-border-warm bg-parchment p-4 text-[0.9375rem]">
-          <Link to="/signin" className="font-bold text-oxblood underline underline-offset-2">
-            Sign in
-          </Link>{' '}
-          to reply. Reading is open to everyone.
-        </p>
+        <div className="torn-wrap relative mt-7 max-w-md -rotate-1">
+          <span className="tape -top-2.5 left-8 z-10 -rotate-3" aria-hidden="true" />
+          <p className="torn bg-parchment px-6 py-6 text-[0.9375rem]">
+            <Link to="/signin" className="font-bold text-oxblood underline underline-offset-2">
+              Sign in
+            </Link>{' '}
+            to reply. Reading is open to everyone.
+          </p>
+        </div>
       )}
     </div>
   )
@@ -173,7 +176,9 @@ export default function FloorView() {
 
   return (
     <>
-      <PageHead symbol="leaf" title="The Floor" purpose="Where readers argue back: discuss our articles, or take the week's open prompt." />
+      <PageHead symbol="leaf" title="The Floor" purpose="Where readers argue back: discuss our articles, or take the week's open prompt."
+        note="Argue the point, not the person."
+      />
       <div className="wrap max-w-4xl">
         <Tabs
           id="floor"

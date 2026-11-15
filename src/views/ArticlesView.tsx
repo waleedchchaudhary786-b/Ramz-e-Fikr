@@ -1,4 +1,5 @@
-import { Reveal, RevealItem, StampIn } from '../utils/motion'
+import { Doodle, Reveal, RevealItem, StampIn, Stick } from '../utils/motion'
+import { Pen } from '../components/Doodles'
 import { Link, useRouter } from '../utils/router'
 import { Divider, Stamp, Sym } from '../components/Symbols'
 import { Reaction } from '../components/Bits'
@@ -25,7 +26,9 @@ export default function ArticlesView() {
 
   return (
     <>
-      <PageHead symbol="hand" title="Articles" purpose="Essays and opinion from debaters, each with one idea worth arguing about." />
+      <PageHead symbol="hand" title="Articles" purpose="Essays and opinion from debaters, each with one idea worth arguing about."
+        note="Because an idea without a sentence is just noise."
+      />
       <div className="wrap">
         <Reveal stagger onMount className="grid gap-8 md:grid-cols-2">
           {articles.map((a, i) => (
@@ -86,15 +89,18 @@ function Reader({ slug }: { slug: string }) {
             </p>
           </RevealItem>
           <RevealItem>
-            <div className="mt-8 border-y border-ink/70 py-5">
-              <StampIn delay={0.5}>
-                <Stamp>Latest Ramz</Stamp>
-              </StampIn>
-              <p className="mt-3 font-display text-xl leading-snug text-oxblood italic md:text-2xl">
-                <Sym name="hand" className="mr-2 not-italic" />
-                {a.ramz}
-              </p>
-            </div>
+            <Stick rest={-1} delay={0.35} className="torn-wrap relative mt-9">
+              <span className="tape -top-2.5 left-10 z-10 -rotate-3" aria-hidden="true" />
+              <div className="torn bg-parchment px-7 py-8">
+                <StampIn delay={0.6}>
+                  <Stamp>Latest Ramz</Stamp>
+                </StampIn>
+                <p className="mt-3 pr-10 font-display text-xl leading-snug text-oxblood italic md:text-2xl">{a.ramz}</p>
+                <Doodle className="absolute right-6 bottom-5 block text-ink" delay={0.8}>
+                  <Pen size={40} />
+                </Doodle>
+              </div>
+            </Stick>
           </RevealItem>
         </Reveal>
 

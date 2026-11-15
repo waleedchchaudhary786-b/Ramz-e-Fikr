@@ -213,7 +213,7 @@ export default function HomeView() {
                 {resources.slice(0, 3).map((r, i) => (
                   <li key={r.slug} className={i === 0 ? '' : '-mt-3'} style={{ marginLeft: ['0', '1.5rem', '0.5rem'][i] }}>
                     <Link
-                      to="/resources"
+                      to={`/resources/${r.slug}`}
                       className="index-card group px-5 pt-2.5 pb-9"
                       style={{ '--tilt': ['-1.6deg', '1.2deg', '-0.6deg'][i] } as CSSProperties}
                     >

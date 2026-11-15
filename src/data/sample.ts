@@ -200,3 +200,33 @@ export const pastPrompts = [
   { week: 'Week of 2 November 2026', text: 'Is a persuasive speech with a false statistic still a good speech?' },
   { week: 'Week of 26 October 2026', text: 'Should novices be allowed to choose their side?' },
 ]
+
+/* ---------- resource pages (sample text) ---------- */
+export type ResourceSection = { heading: string; points: string[] }
+export const resourceBodies: Record<string, ResourceSection[]> = {
+  'first-principles-casebuilding': [
+    { heading: 'Minutes 0 to 5: what is this debate about?', points: ['Rewrite the motion in your own words, in one sentence.', 'Name who is affected and what changes for them.', 'Write down what your side must prove to win. That is your burden.'] },
+    { heading: 'Minutes 5 to 12: two arguments, not five', points: ['For each argument write claim, mechanism, impact on three separate lines.', 'If you cannot write the mechanism, you do not have an argument yet.', 'Pick one example per argument that a stranger would believe.'] },
+    { heading: 'Minutes 12 to 15: their best case', points: ['Write the strongest thing the other side will say.', 'Prepare one answer to it, and decide who delivers it.'] },
+  ],
+  'weighing-worksheet': [
+    { heading: 'Fill in for your impact, then theirs', points: ['Scale: how many people, and how badly?', 'Likelihood: how sure are we that it happens?', 'Reversibility: can it be undone later?'] },
+    { heading: 'Then say it out loud', points: ['"Even if they are right about X, our impact matters more because…"', 'Use one of the three rows above as the reason, not all three.'] },
+  ],
+  'pk-economy-casefile': [
+    { heading: 'Background', points: ['What a programme is, what conditions are, and who signs.', 'The difference between stabilisation and growth.'] },
+    { heading: 'Clashes that keep coming up', points: ['Short-term pain against long-term credibility.', 'Who bears the cost of subsidy removal.', 'Whether conditions would have been needed anyway.'] },
+  ],
+  'poi-drills': [
+    { heading: 'Offering', points: ['Fifteen words or fewer. Practise with a partner counting.', 'Ask a question the speaker cannot answer in one word.'] },
+    { heading: 'Taking', points: ['Finish your sentence first, then accept.', 'Answer in two sentences and return to your signpost by name.'] },
+  ],
+  'adjudication-notes': [
+    { heading: 'What the panel talks about', points: ['Which clashes decided the round, in order.', 'Who won each clash and why, in the debaters’ own words.'] },
+    { heading: 'What that means for you', points: ['Tell the judge which clash matters most. They are looking for it anyway.', 'Arguments nobody answered are not automatically won; they still need weighing.'] },
+  ],
+  'smog-casefile': [
+    { heading: 'Sources of the problem', points: ['Crop burning, vehicles, brick kilns and industry: learn rough shares before quoting them.', 'Why the season peaks in November.'] },
+    { heading: 'Usual clashes', points: ['School closures against factory closures.', 'Provincial action against cross-border causes.', 'Enforcement capacity against new laws.'] },
+  ],
+}

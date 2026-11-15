@@ -479,3 +479,36 @@ button:hover .arrow {
   opacity: 0;
   transform: translateX(-10px);
 }
+
+/* inputs that look like writing on ruled paper */
+.paper-input,
+.paper-area {
+  display: block;
+  width: 100%;
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--color-ink);
+  border-radius: 0;
+}
+.paper-input {
+  min-height: 44px;
+  padding: 0.25rem 0.25rem;
+}
+.paper-area {
+  padding: 0.35rem 0.25rem;
+  line-height: 1.9rem;
+  border-bottom-width: 1px;
+  background-image: repeating-linear-gradient(transparent 0 calc(1.9rem - 1px), color-mix(in srgb, var(--color-ink) 22%, transparent) calc(1.9rem - 1px) 1.9rem);
+  background-position: 0 0.35rem;
+}
+.paper-input:focus,
+.paper-area:focus {
+  outline: none;
+  border-bottom-color: var(--color-oxblood);
+}
+.paper-input::placeholder,
+.paper-area::placeholder {
+  color: color-mix(in srgb, var(--color-charcoal) 75%, transparent);
+  font-style: italic;
+}

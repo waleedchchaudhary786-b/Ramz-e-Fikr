@@ -5,6 +5,7 @@ import { useSession } from '../services/session'
 import { useStore, timeAgo } from '../services/store'
 import { Fold } from '../components/Bits'
 import { Divider, Sym } from '../components/Symbols'
+import { FrameCorners } from '../components/Doodles'
 import { PageHead } from './PlaceholderView'
 import { allMotions, allResources, articles } from '../data/sample'
 
@@ -21,9 +22,12 @@ const GUIDE: [string, string][] = [
 export function AboutView() {
   return (
     <>
-      <PageHead info symbol="fe" title="About" purpose="What Ramz-e-Fikr is, how the site works, and a guide to using it." />
+      <PageHead info symbol="fe" title="About" purpose="What Ramz-e-Fikr is, how the site works, and a guide to using it."
+        note="New city. Same mission. Bigger community."
+      />
       <div className="wrap max-w-3xl pt-8">
-        <Reveal>
+        <Reveal className="frame relative bg-ivory px-6 py-8 md:px-10">
+          <FrameCorners />
           <h2 className="text-2xl font-bold">Our mission</h2>
           <p className="measure mt-3 text-[1.0625rem] leading-[1.8]">
             Ramz-e-Fikr is an open archive of debate resources, kept by students. We collect motions, write guides and
@@ -79,7 +83,9 @@ export function DeskView() {
   const steps = ['You send a draft', 'An editor reads it', 'An owner approves or returns it with a note', 'It is published with your name']
   return (
     <>
-      <PageHead info symbol="dagger" title="The Desk" purpose="Who runs the publication, how to submit, and how approval works." />
+      <PageHead info symbol="dagger" title="The Desk" purpose="Who runs the publication, how to submit, and how approval works."
+        note="More drafts than we can count."
+      />
       <div className="wrap max-w-3xl pt-8">
         <Reveal>
           <h2 className="text-2xl font-bold">Masthead</h2>
