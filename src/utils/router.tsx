@@ -11,9 +11,17 @@ import {
   type ReactNode,
 } from 'react'
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '') // "" or "/repo"
+/* Two modes. Default: real paths with pushState (for a normal host).
+   VITE_ROUTER=hash: plain "#name" hashes, for hosts that cannot serve deep
+   links (previews, or GitHub Pages without a 404 redirect). */
+const HASH_MODE = import.meta.env.VITE_ROUTER === 'hash'
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '').replace(/^\.$/, '') // "" or "/repo"
 
 function readPath(): string {
+  if (HASH_MODE) {
+    const h = window.location.hash.replace(/^#/, '')
+    return '/' + h.split('--').join('/')
+  }
   let p = window.location.pathname
   if (BASE && p.startsWith(BASE)) p = p.slice(BASE.length)
   if (!p.startsWith('/')) p = '/' + p
@@ -22,6 +30,10 @@ function readPath(): string {
 
 /** Turn an app path ("/floor") into a real href that respects the base path. */
 export function href(to: string): string {
+  if (HASH_MODE) {
+    const path = to.split('#')[0].replace(/^\//, '')
+    return '#' + path.split('/').join('--')
+  }
   return BASE + to
 }
 
@@ -34,11 +46,16 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const onPop = () => setLoc({ path: readPath(), search: window.location.search })
     window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
+    window.addEventListener('hashchange', onPop)
+    return () => {
+      window.removeEventListener('popstate', onPop)
+      window.removeEventListener('hashchange', onPop)
+    }
   }, [])
 
   const navigate = useCallback((to: string) => {
-    window.history.pushState({}, '', href(to))
+    if (HASH_MODE) window.location.hash = href(to)
+    else window.history.pushState({}, '', href(to))
     setLoc({ path: readPath(), search: window.location.search })
     const hash = to.includes('#') ? to.slice(to.indexOf('#') + 1) : ''
     if (hash) {
