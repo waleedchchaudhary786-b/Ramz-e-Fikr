@@ -1,0 +1,155 @@
+import { useEffect, useState } from 'react'
+import { LayoutDashboard, Menu, X } from 'lucide-react'
+import { AnimatePresence } from 'motion/react'
+import { DUR, EASE_CALM, EASE_SNAP, motion, useReducedMotion } from '../utils/motion'
+import { Link, useRouter } from '../utils/router'
+import { useSession } from '../services/session'
+
+/* Main nav: five items, no more. About lives in the footer only. */
+export const NAV = [
+  { to: '/articles', label: 'Articles' },
+  { to: '/resources', label: 'Resources' },
+  { to: '/motions', label: 'Motions' },
+  { to: '/floor', label: 'The Floor' },
+  { to: '/glossary', label: 'Glossary' },
+] as const
+
+export function Brand({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className="flex items-baseline gap-2.5 whitespace-nowrap">
+      <span className={`urdu font-bold text-oxblood ${compact ? 'text-2xl' : 'text-[1.75rem]'}`}>رمزِ فکر</span>
+      <span className="font-display text-[0.8125rem] font-bold tracking-[0.22em] text-ink md:text-sm">RAMZ-E-FIKR</span>
+    </span>
+  )
+}
+
+export default function Navbar() {
+  const { path } = useRouter()
+  const { user } = useSession()
+  const reduced = !!useReducedMotion()
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => setOpen(false), [path])
+
+  const isActive = (to: string) => path === to || path.startsWith(to + '/')
+
+  return (
+    <header className="sticky top-0 z-40 bg-ivory">
+      <div className="wrap flex h-16 items-center gap-3 md:h-[4.5rem]">
+        <motion.div
+          className="origin-left"
+          animate={{ scale: scrolled && !reduced ? 0.92 : 1 }}
+          transition={{ duration: DUR.base, ease: EASE_CALM }}
+        >
+          <Link to="/" aria-label="Ramz-e-Fikr home" className="block py-2">
+            <Brand compact />
+          </Link>
+        </motion.div>
+
+        {user && (
+          <Link
+            to="/dashboard"
+            className="ml-1 inline-flex min-h-11 items-center gap-1.5 border border-oxblood px-2.5 text-[0.8125rem] font-bold text-oxblood transition-transform duration-200 hover:-translate-y-px md:px-3"
+          >
+            <LayoutDashboard size={15} aria-hidden="true" />
+            <span className="hidden min-[430px]:inline">My Dashboard</span>
+            <span className="min-[430px]:hidden">Dashboard</span>
+          </Link>
+        )}
+
+        <nav aria-label="Main" className="ml-auto hidden items-center gap-1 lg:flex">
+          {NAV.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              aria-current={isActive(n.to) ? 'page' : undefined}
+              className={`relative px-3 py-2 text-[0.9375rem] font-medium transition-colors duration-200 ${
+                isActive(n.to) ? 'text-oxblood' : 'text-ink hover:text-oxblood'
+              }`}
+            >
+              {n.label}
+              {isActive(n.to) && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute inset-x-3 -bottom-0.5 h-0.5 bg-oxblood"
+                  transition={{ duration: DUR.slow, ease: EASE_SNAP }}
+                />
+              )}
+            </Link>
+          ))}
+          {!user && (
+            <Link to="/signin" className="btn btn-ghost ml-3 !min-h-10 !py-1.5 text-sm">
+              Sign in
+            </Link>
+          )}
+        </nav>
+
+        <button
+          type="button"
+          className="ml-auto grid h-11 w-11 place-items-center lg:hidden"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* hairline appears once the page scrolls */}
+      <div
+        className="h-px bg-ink transition-opacity duration-300"
+        style={{ opacity: scrolled ? 0.8 : 0.18 }}
+        aria-hidden="true"
+      />
+
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            id="mobile-menu"
+            aria-label="Main"
+            className="absolute inset-x-0 top-full border-b border-ink bg-ivory shadow-[0_8px_0_rgba(23,23,23,0.06)] lg:hidden"
+            initial={{ opacity: 0, y: reduced ? 0 : -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: reduced ? 0 : -8 }}
+            transition={{ duration: DUR.fast, ease: EASE_CALM }}
+          >
+            <ul className="wrap py-2">
+              {NAV.map((n) => (
+                <li key={n.to} className="border-b border-border-warm last:border-0">
+                  <Link
+                    to={n.to}
+                    aria-current={isActive(n.to) ? 'page' : undefined}
+                    className={`flex min-h-12 items-center justify-between font-display text-lg font-bold ${
+                      isActive(n.to) ? 'text-oxblood' : ''
+                    }`}
+                  >
+                    {n.label}
+                    <span aria-hidden="true" className="text-gold">
+                      ⟶
+                    </span>
+                  </Link>
+                </li>
+              ))}
+              {!user && (
+                <li className="py-3">
+                  <Link to="/signin" className="btn btn-primary w-full">
+                    Sign in or create account
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  )
+}
