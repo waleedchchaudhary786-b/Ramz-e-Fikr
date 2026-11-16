@@ -7,8 +7,9 @@ import { useRouter } from '../utils/router'
 import { useArticles } from '../services/store'
 import { Sym, type SymbolName } from './Symbols'
 import { allMotions, allResources, glossary } from '../data/sample'
+import { pickMotion } from '../views/MotionsView'
 
-type Hit = { key: string; to: string; symbol: SymbolName; kind: string; title: string; sub: string }
+type Hit = { key: string; motion?: string; to: string; symbol: SymbolName; kind: string; title: string; sub: string }
 
 export const OPEN_SEARCH = 'ramz:open-search'
 
@@ -48,7 +49,7 @@ export default function SearchPalette() {
   const index = useMemo<Hit[]>(
     () => [
       ...articles.map((a) => ({ key: 'a' + a.slug, to: `/articles/${a.slug}`, symbol: 'hand' as const, kind: 'Essay', title: a.title, sub: a.ramz })),
-      ...allMotions.map((m) => ({ key: 'm' + m.slug, to: '/motions', symbol: 'pilcrow' as const, kind: 'Motion', title: m.text, sub: `${m.format} · ${m.theme}` })),
+      ...allMotions.map((m) => ({ key: 'm' + m.slug, motion: m.slug, to: '/motions', symbol: 'pilcrow' as const, kind: 'Motion', title: m.text, sub: `${m.format} · ${m.theme}` })),
       ...allResources.map((r) => ({ key: 'r' + r.slug, to: `/resources/${r.slug}`, symbol: 'section' as const, kind: r.kind, title: r.title, sub: r.summary })),
       ...glossary.map((g) => ({ key: 'g' + g.term, to: '/glossary', symbol: 'dagger' as const, kind: 'Term', title: `${g.term} · ${g.urdu}`, sub: g.meaning })),
     ],
@@ -62,6 +63,7 @@ export default function SearchPalette() {
 
   const go = (h: Hit) => {
     setOpen(false)
+    if (h.motion) pickMotion(h.motion)
     navigate(h.to)
   }
 

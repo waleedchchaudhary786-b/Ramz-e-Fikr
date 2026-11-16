@@ -30,7 +30,7 @@ const RAMZ_MAX = 140
 const blank = { title: '', authorName: '', ramz: '', body: '' }
 
 export default function StudioView() {
-  const { user } = useSession()
+  const { user, ready: authReady } = useSession()
   const { drafts } = useStore()
   const [id, setId] = useState<string | undefined>()
   const [form, setForm] = useState(blank)
@@ -50,6 +50,7 @@ export default function StudioView() {
     return () => window.clearTimeout(t)
   }, [form, id, user])
 
+  if (!authReady) return <PageHead info symbol="hand" title="Writing studio" purpose="Checking who is signed in…" />
   if (!user)
     return (
       <>
@@ -207,7 +208,8 @@ export default function StudioView() {
 
 /** Owner-only: essays waiting for a decision. */
 export function ReviewQueue() {
-  const { drafts, posts } = useStore()
+  const { drafts, posts, reported } = useStore()
+  const flaggedByReaders = posts.filter((p) => reported.includes(p.id))
   const pending = drafts.filter((d) => d.status === 'pending')
   const held = posts.filter((p) => p.flagged)
   const [notes, setNotes] = useState<Record<string, string>>({})
@@ -262,6 +264,28 @@ export function ReviewQueue() {
               <div className="mt-2 flex gap-2">
                 <button type="button" onClick={() => actions.allowPost(p.id)} className="btn btn-ghost">
                   Allow
+                </button>
+                <button type="button" onClick={() => actions.deletePost(p.id)} className="btn btn-ghost">
+                  Delete
+                </button>
+              </div>
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+      <h2 className="label mt-10 !font-bold !text-ink">Moderation · replies reported by readers · {flaggedByReaders.length}</h2>
+      {flaggedByReaders.length === 0 && <p className="meta mt-3">No reports.</p>}
+      <ul className="mt-3">
+        <AnimatePresence>
+          {flaggedByReaders.map((p) => (
+            <motion.li key={p.id} layout exit={{ opacity: 0, x: -20 }} className="border-b border-border-warm py-3">
+              <p className="meta">
+                <strong className="font-bold text-ink">{p.author}</strong> · {timeAgo(p.at)} · {p.thread}
+              </p>
+              <p className="mt-1">{p.text}</p>
+              <div className="mt-2 flex gap-2">
+                <button type="button" onClick={() => actions.clearReports(p.id)} className="btn btn-ghost">
+                  Keep it
                 </button>
                 <button type="button" onClick={() => actions.deletePost(p.id)} className="btn btn-ghost">
                   Delete

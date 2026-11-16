@@ -6,6 +6,7 @@ import { DUR, EASE_CALM, EASE_SNAP, motion, useReducedMotion } from '../utils/mo
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { actions, useStore } from '../services/store'
+import { CONNECTED } from '../services/supabase'
 
 /** Tabs with an ink underline that slides between them. */
 export function Tabs<T extends string>({
@@ -85,6 +86,8 @@ export function Reaction({ kind, itemKey, base = 0 }: { kind: 'like' | 'bookmark
   const store = useStore()
   const reduced = !!useReducedMotion()
   const on = (kind === 'like' ? store.likes : store.bookmarks).includes(itemKey)
+  // connected: the true number of likes. Local preview: a sample number plus your own.
+  const count = (CONNECTED ? 0 : base) + (store.likeCounts[itemKey] ?? 0)
   const Icon = kind === 'like' ? Heart : Bookmark
   const text = kind === 'like' ? (on ? 'Liked' : 'Like') : on ? 'Saved' : 'Save'
   const cls =
@@ -94,7 +97,7 @@ export function Reaction({ kind, itemKey, base = 0 }: { kind: 'like' | 'bookmark
     return (
       <Link to="/signin" className={cls} title="Sign in to use this">
         <Icon size={16} aria-hidden="true" /> {text}
-        {kind === 'like' && base > 0 && <span className="text-charcoal">· {base}</span>}
+        {kind === 'like' && count > 0 && <span className="text-charcoal">· {count}</span>}
       </Link>
     )
   return (
@@ -114,7 +117,7 @@ export function Reaction({ kind, itemKey, base = 0 }: { kind: 'like' | 'bookmark
         <Icon size={16} aria-hidden="true" fill={on ? 'currentColor' : 'none'} />
       </motion.span>
       {text}
-      {kind === 'like' && <span className="text-charcoal">· {base + (on ? 1 : 0)}</span>}
+      {kind === 'like' && <span className="text-charcoal">· {count}</span>}
     </button>
   )
 }

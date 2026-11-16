@@ -26,8 +26,11 @@ The tables and every permission rule are in `supabase/schema.sql`.
 
 ## Status
 
-Done: all pages, the writing studio with owner review, search, and the Supabase connection
-(email-code sign-in, shared replies, likes, saves, essays, notices, held-reply moderation).
+Done: all pages, the writing studio with owner review, search, prep and speech timers, the
+motion draw, reporting and moderation, and the Supabase connection (email-code sign-in,
+shared replies, likes, saves, essays, notices).
 
-Not yet in the database: motions, resources, glossary, the weekly prompt and the three sample
+Not yet in the database: motions, resources, glossary, the weekly prompt and the four sample
 essays, which are still edited in `src/data/`. There is no admin screen for those yet.
+
+To preview without the database, start the site with `VITE_SUPABASE_URL=off`.

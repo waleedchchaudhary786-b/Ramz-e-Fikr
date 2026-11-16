@@ -10,17 +10,18 @@ import { useReducedMotion } from '../utils/motion'
 import { Link } from '../utils/router'
 import { Sym, type SymbolName } from './Symbols'
 import { articles, motions } from '../data/sample'
+import { pickMotion } from '../views/MotionsView'
 
 const BASE_SPEED = 42 // px per second at normal flow
 const FAST = 5.5 // multiplier while held
 const RAMP_MS = 90 // time constant: reaches target in about 250ms
 const HOLD_MS = 180 // longer than this is a hold, not a tap
 
-type Item = { key: string; to: string; symbol: SymbolName; text: string }
+type Item = { key: string; to: string; symbol: SymbolName; text: string; motion?: string }
 
 function useItems(): Item[] {
   return useMemo(() => {
-    const m: Item[] = motions.map((x) => ({ key: 'm-' + x.slug, to: '/motions', symbol: 'pilcrow', text: x.text }))
+    const m: Item[] = motions.map((x) => ({ key: 'm-' + x.slug, to: '/motions', symbol: 'pilcrow', text: x.text, motion: x.slug }))
     const a: Item[] = articles.map((x) => ({
       key: 'a-' + x.slug,
       to: '/articles/' + x.slug,
@@ -154,6 +155,7 @@ function FlowTicker({ items }: { items: Item[] }) {
                 <li key={it.key} className="flex shrink-0 items-center">
                   <Link
                     to={it.to}
+                    onClick={() => it.motion && pickMotion(it.motion)}
                     tabIndex={copy === 1 ? -1 : 0}
                     draggable={false}
                     className="flex items-center gap-2 px-5 py-1.5 font-mono text-[0.8125rem] text-ink hover:text-oxblood md:py-2 md:text-sm"
@@ -201,7 +203,7 @@ function StaticTicker({ items }: { items: Item[] }) {
       <ul ref={ref} className="flex flex-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {items.map((it) => (
           <li key={it.key} className="shrink-0">
-            <Link to={it.to} className="flex items-center gap-2 px-4 py-2 font-mono text-sm">
+            <Link to={it.to} onClick={() => it.motion && pickMotion(it.motion)} className="flex items-center gap-2 px-4 py-2 font-mono text-sm">
               <Sym name={it.symbol} />
               <span className="whitespace-nowrap">{it.text}</span>
             </Link>

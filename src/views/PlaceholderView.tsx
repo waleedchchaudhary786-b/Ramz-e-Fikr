@@ -1,4 +1,4 @@
-import { Doodle, Reveal, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
+import { Doodle, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
 import { Sparks, Star } from '../components/Doodles'
 import { Link } from '../utils/router'
 import { useState } from 'react'
@@ -62,29 +62,17 @@ export function PageHead({
   )
 }
 
-export default function PlaceholderView(props: {
-  symbol: SymbolName
-  title: string
-  purpose: string
-  info?: boolean
-  phase: string
-}) {
+export default function NotFoundView() {
   return (
     <>
-      <PageHead {...props} />
-      <div className="wrap mt-8">
-        <Reveal>
-          <div className="torn-wrap relative max-w-xl"><span className="tape -top-2.5 right-8 z-10 rotate-6" aria-hidden="true" /><div className="torn bg-parchment px-7 py-9">
-            <p className="label">Being typeset</p>
-            <p className="mt-2">
-              This page is built in {props.phase}. The header, footer, ticker and page transitions are already live, so
-              you can click around and judge the feel.
-            </p>
-            <Link to="/" className="mt-4 inline-flex min-h-11 items-center font-bold text-oxblood">
-              Back to the front page <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
-            </Link>
-          </div></div>
-        </Reveal>
+      <PageHead symbol="dagger" title="Page not found" purpose="That page is not in the archive. It may have moved, or the address may have a typo." note="Lost? Even good debaters lose the thread." />
+      <div className="wrap flex flex-wrap gap-3">
+        <Link to="/" className="btn btn-primary">
+          Back to the front page <span aria-hidden="true" className="arrow">⟶</span>
+        </Link>
+        <Link to="/motions" className="btn btn-ghost">
+          Browse the motions
+        </Link>
       </div>
     </>
   )

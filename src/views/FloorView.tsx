@@ -33,7 +33,7 @@ function WithMentions({ text, names }: { text: string; names: string[] }) {
 /** A discussion thread: replies, plus a composer for signed-in members. */
 export function Thread({ thread, withStance = false }: { thread: string; withStance?: boolean }) {
   const { user } = useSession()
-  const { posts } = useStore()
+  const { posts, myReports } = useStore()
   const list = posts.filter((p) => p.thread === thread)
   const [text, setText] = useState('')
   const [stance, setStance] = useState<Stance>('Unsure')
@@ -105,6 +105,18 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
                 ) : (
                   <p className="measure mt-1.5">
                     <WithMentions text={p.text} names={names} />
+                  </p>
+                )}
+                {user && !mine && (
+                  <p className="mt-1">
+                    <button
+                      type="button"
+                      disabled={myReports.includes(p.id)}
+                      onClick={() => actions.reportPost(p.id)}
+                      className="min-h-11 font-mono text-[0.8125rem] text-charcoal underline underline-offset-2 disabled:no-underline"
+                    >
+                      {myReports.includes(p.id) ? 'Reported: an owner will take a look' : 'Report'}
+                    </button>
                   </p>
                 )}
                 {mine && editing !== p.id && (

@@ -146,9 +146,10 @@ function titleFor(key: string): { label: string; to: string } {
 }
 
 export function DashboardView() {
-  const { user, signOut } = useSession()
+  const { user, ready, signOut } = useSession()
   const store = useStore()
 
+  if (!ready) return <PageHead info symbol="fe" title="My Dashboard" purpose="Checking who is signed in…" />
   if (!user)
     return (
       <>

@@ -57,6 +57,17 @@ export const articles: Article[] = [
     readMins: 8,
   },
   {
+    slug: 'evidence-is-not-an-argument',
+    title: 'Evidence is not an argument',
+    authorName: 'Guest Author',
+    postedBy: 'Publication Team',
+    date: '2026-11-01',
+    ramz: 'A fact tells the room what is happening; only reasoning tells it why your side should win.',
+    excerpt: 'The speaker with the thickest folder is often the most surprised by the ballot. On the difference between knowing something and arguing from it.',
+    category: 'Craft',
+    readMins: 4,
+  },
+  {
     slug: 'the-case-for-losing',
     title: 'The case for losing your first ten rounds',
     authorName: 'Guest Author',

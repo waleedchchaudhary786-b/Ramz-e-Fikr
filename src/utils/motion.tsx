@@ -3,8 +3,8 @@
    Tune speed and feel here and it changes everywhere.
    Rules: transform and opacity only, fire once, honour reduced motion.
 ------------------------------------------------------------------- */
-import { type ReactNode, useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion, useScroll, type Variants } from 'motion/react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useInView, useReducedMotion, useScroll, type Variants } from 'motion/react'
 
 /** Snappy with a small overshoot: the "tactile" curve. */
 export const EASE_SNAP = [0.2, 0.9, 0.25, 1.15] as const
@@ -268,6 +268,35 @@ export function StampIn({ children, className, delay = 0.2 }: { children: ReactN
 export function InkProgress({ className }: { className?: string }) {
   const { scrollYProgress } = useScroll()
   return <motion.div aria-hidden="true" className={className} style={{ scaleX: scrollYProgress, transformOrigin: 'left center' }} />
+}
+
+/** A number that counts up once when it scrolls into view, like a ledger being totalled. */
+export function CountUp({ to, className }: { to: number; className?: string }) {
+  const reduced = !!useReducedMotion()
+  const ref = useRef<HTMLSpanElement>(null)
+  const seen = useInView(ref, { once: true, margin: '0px 0px -10% 0px' })
+  const [n, setN] = useState(reduced ? to : 0)
+  useEffect(() => {
+    if (!seen || reduced) {
+      if (reduced) setN(to)
+      return
+    }
+    const start = performance.now()
+    const dur = 900
+    let raf = 0
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / dur)
+      setN(Math.round(to * (1 - Math.pow(1 - t, 3))))
+      if (t < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [seen, to, reduced])
+  return (
+    <span ref={ref} className={className} aria-label={String(to)}>
+      {n}
+    </span>
+  )
 }
 
 export { motion, useReducedMotion }

@@ -547,3 +547,48 @@ a:hover .seal {
 .font-hand {
   font-family: var(--font-hand);
 }
+
+/* ---- brand polish ---- */
+/* the page as a poster: a faint gold frame around the window on large screens */
+@media (min-width: 1280px) {
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 10px;
+    z-index: 55;
+    pointer-events: none;
+    border: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+    outline: 1px solid color-mix(in srgb, var(--color-gold) 28%, transparent);
+    outline-offset: 3px;
+  }
+}
+/* warmer paper toward the edges, like the posters */
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, transparent 55%, color-mix(in srgb, var(--color-parchment) 70%, transparent) 100%),
+    var(--color-ivory);
+  background-attachment: fixed;
+}
+/* scrollbar in brand colours */
+html {
+  scrollbar-color: var(--color-oxblood) var(--color-parchment);
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-oxblood);
+  border: 3px solid var(--color-parchment);
+}
+/* buttons: the gold "misprint" shadow shifts when pressed */
+.btn-primary {
+  transition: transform 0.15s var(--ease-snap), box-shadow 0.15s var(--ease-snap);
+}
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-gold);
+}

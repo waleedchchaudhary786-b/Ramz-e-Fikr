@@ -10,6 +10,7 @@ import { useSession } from '../services/session'
 import { Thread } from './FloorView'
 import { PageHead } from './PlaceholderView'
 import { formatDate, type Article } from '../data/sample'
+import { wordCount } from '../data/articles'
 
 const anchor = (text: string) => 's-' + text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
@@ -114,6 +115,7 @@ function Reader({ a, all }: { a: Article; all: Article[] }) {
   const detail = getArticleDetail(a.slug)
   const blocks = detail?.blocks ?? [{ t: 'p' as const, text: a.excerpt }]
   const headings = blocks.filter((b) => b.t === 'h')
+  const words = wordCount(blocks)
   const next = all[(all.indexOf(a) + 1) % all.length]
   let firstPara = true
 
@@ -133,7 +135,7 @@ function Reader({ a, all }: { a: Article; all: Article[] }) {
             <RevealItem>
               <h1 className="mt-3 text-4xl font-black md:text-[3.25rem]">{a.title}</h1>
               <p className="meta mt-4">
-                By {a.authorName} · posted by {a.postedBy}
+                By {a.authorName} · posted by {a.postedBy} · {words.toLocaleString()} words
               </p>
             </RevealItem>
             <RevealItem>
@@ -224,6 +226,51 @@ function Reader({ a, all }: { a: Article; all: Article[] }) {
               )
             })}
           </div>
+
+          {detail?.counter && (
+            <Reveal>
+              <section className="mt-12 border-l-[3px] border-oxblood bg-parchment/70 px-6 py-6" aria-labelledby="counter-h">
+                <h2 id="counter-h" className="label !font-bold !text-ink">
+                  <Sym name="dagger" className="mr-1.5" />
+                  The other side
+                </h2>
+                <p className="measure mt-2 text-[1.0625rem] leading-[1.8]">{detail.counter}</p>
+              </section>
+            </Reveal>
+          )}
+
+          {detail?.questions && detail.questions.length > 0 && (
+            <Reveal>
+              <section className="mt-10" aria-labelledby="q-h">
+                <h2 id="q-h" className="text-2xl font-bold">For your club to discuss</h2>
+                <Scribble className="mt-1 block h-2.5 w-28 text-oxblood" />
+                <ol className="mt-4 space-y-3">
+                  {detail.questions.map((q, i) => (
+                    <li key={q} className="flex gap-4">
+                      <span className="numeral w-8 shrink-0 text-2xl" aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <span className="measure text-[1.0625rem]">{q}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            </Reveal>
+          )}
+
+          {detail?.terms && detail.terms.length > 0 && (
+            <p className="meta mt-8">
+              Terms used in this essay:{' '}
+              {detail.terms.map((t, i) => (
+                <span key={t}>
+                  {i > 0 && ' · '}
+                  <Link to="/glossary" className="font-bold text-oxblood underline underline-offset-2">
+                    {t}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          )}
 
           {detail && detail.inARound.length > 0 && (
             <Stick rest={0.8} className="torn-wrap relative mt-12">

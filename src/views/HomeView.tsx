@@ -1,11 +1,12 @@
 import { useMemo, type CSSProperties } from 'react'
-import { Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
+import { CountUp, Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
 import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Seal, Sparks, Star } from '../components/Doodles'
-import { useArticles } from '../services/store'
-import { formatDate, motions, resources, weeklyPrompt } from '../data/sample'
+import { useArticles, useStore } from '../services/store'
+import { pickMotion } from './MotionsView'
+import { allMotions, allResources, formatDate, glossary, motions, resources, weeklyPrompt } from '../data/sample'
 
 /** Section number sitting in the notebook margin (desktop only). */
 function MarginNo({ n, label }: { n: string; label: string }) {
@@ -21,7 +22,9 @@ function MarginNo({ n, label }: { n: string; label: string }) {
 
 export default function HomeView() {
   const { user } = useSession()
-  const lead = useArticles()[0]
+  const articles = useArticles()
+  const lead = articles[0]
+  const promptReplies = useStore().posts.filter((p) => p.thread === 'prompt' && !p.flagged).length
   const motionOfDay = useMemo(() => motions[new Date().getDate() % motions.length], [])
 
   return (
@@ -101,7 +104,7 @@ export default function HomeView() {
                     {motionOfDay.format} · {motionOfDay.theme}
                   </p>
                   <Scribble className="my-4 block h-2.5 w-full text-border-warm" />
-                  <Link to="/motions" className="inline-flex min-h-11 items-center text-sm font-bold text-oxblood">
+                  <Link to="/motions" onClick={() => pickMotion(motionOfDay.slug)} className="inline-flex min-h-11 items-center text-sm font-bold text-oxblood">
                     Start a 15-minute prep <span aria-hidden="true" className="arrow ml-1.5">⟶</span>
                   </Link>
                 </aside>
@@ -178,7 +181,7 @@ export default function HomeView() {
               <ol>
                 {motions.slice(0, 4).map((m, i) => (
                   <li key={m.slug} className="border-b border-border-warm">
-                    <Link to="/motions" className="toc group flex gap-4 py-4">
+                    <Link to="/motions" onClick={() => pickMotion(m.slug)} className="toc group flex gap-4 py-4">
                       <span className="relative w-10 shrink-0 pt-0.5" aria-hidden="true">
                         <span className="toc-no numeral block text-[1.75rem]">{String(i + 1).padStart(2, '0')}</span>
                         <Sym name="hand" className="toc-hand absolute top-0 left-0 block text-2xl" />
@@ -241,6 +244,42 @@ export default function HomeView() {
             </Reveal>
           </section>
 
+          {/* ---------- the archive in numbers, and the city chapters ---------- */}
+          <section className="ledger-row mt-16 md:mt-24" aria-label="The archive in numbers">
+            <Reveal>
+              <div className="frame relative grid gap-8 px-6 py-8 md:grid-cols-[1fr_auto] md:items-center md:px-10">
+                <FrameCorners />
+                <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+                  {[
+                    [allMotions.length, 'motions'],
+                    [allResources.length, 'resources'],
+                    [articles.length, 'essays'],
+                    [glossary.length, 'glossary terms'],
+                  ].map(([n, label]) => (
+                    <div key={label}>
+                      <dt className="sr-only">{label}</dt>
+                      <dd>
+                        <CountUp to={n as number} className="block font-display text-5xl leading-none font-black text-oxblood" />
+                        <span className="label mt-1.5 block">{label}</span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="flex flex-wrap items-center gap-4 md:max-w-xs md:justify-end">
+                  <StampIn delay={0.2}>
+                    <Stamp>City chapter · Lahore</Stamp>
+                  </StampIn>
+                  <StampIn delay={0.35}>
+                    <Stamp className="!rotate-2">City chapter · Faisalabad</Stamp>
+                  </StampIn>
+                  <Link to="/desk" className="hand -rotate-2 text-2xl text-oxblood">
+                    next stop: your city? <span className="arrow">⟶</span>
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+          </section>
+
           <div className="ledger-row mt-14 md:mt-20">
             <Divider />
           </div>
@@ -271,7 +310,7 @@ export default function HomeView() {
                   <span className="tape -top-2.5 right-10 z-10 rotate-3" aria-hidden="true" />
                   <div className="torn bg-parchment px-6 py-7">
                     <p className="label">{weeklyPrompt.week}</p>
-                    <p className="mt-1 font-display text-xl font-bold">{weeklyPrompt.replies} replies so far</p>
+                    <p className="mt-1 font-display text-xl font-bold">{promptReplies} {promptReplies === 1 ? 'reply' : 'replies'} so far</p>
                     <Pressable className="mt-3">
                       <Link to="/floor" className="btn btn-primary">
                         Take the floor <span aria-hidden="true" className="arrow">⟶</span>

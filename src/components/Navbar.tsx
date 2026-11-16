@@ -24,16 +24,21 @@ export function Brand({ compact = false, stacked = false }: { compact?: boolean;
       </span>
     )
   return (
-    <span className="flex items-baseline gap-2.5 whitespace-nowrap">
+    <span className="flex items-center gap-2.5 whitespace-nowrap">
+      {/* the monogram tile: the same mark as the browser tab icon */}
+      <span aria-hidden="true" className="seal relative grid h-9 w-9 shrink-0 place-items-center bg-oxblood">
+        <span className="absolute inset-[3px] border border-gold/80" />
+        <span className="urdu text-xl leading-none text-ivory">ف</span>
+      </span>
       <span className={`urdu font-bold text-oxblood ${compact ? 'text-2xl' : 'text-[1.75rem]'}`}>رمزِ فکر</span>
-      <span className="font-display text-[0.8125rem] font-bold tracking-[0.22em] text-oxblood md:text-sm">RAMZ-E-FIKR</span>
+      <span className="hidden font-display text-[0.8125rem] font-bold tracking-[0.22em] text-oxblood min-[400px]:inline md:text-sm">RAMZ-E-FIKR</span>
     </span>
   )
 }
 
 export default function Navbar() {
   const { path } = useRouter()
-  const { user } = useSession()
+  const { user, ready } = useSession()
   const reduced = !!useReducedMotion()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -50,6 +55,14 @@ export default function Navbar() {
   const isActive = (to: string) => path === to || path.startsWith(to + '/')
 
   return (
+    <>
+      {/* masthead line, like the top of a newspaper. Scrolls away; the header below stays. */}
+      <div className="bg-oxblood text-ivory">
+        <div className="wrap flex h-8 items-center justify-between gap-4 font-mono text-[0.6875rem] tracking-[0.16em] uppercase">
+          <span>Where thought becomes argument</span>
+          <span className="hidden sm:inline">Vol. I · 2026 · Lahore · Faisalabad</span>
+        </div>
+      </div>
     <header className="sticky top-0 z-40 bg-ivory">
       <div className="wrap flex h-16 items-center gap-3 md:h-[4.5rem]">
         <motion.div
@@ -93,7 +106,7 @@ export default function Navbar() {
               )}
             </Link>
           ))}
-          {!user && (
+          {!user && ready && (
             <Link to="/signin" className="btn btn-ghost ml-3 !min-h-10 !py-1.5 text-sm">
               Sign in
             </Link>
@@ -159,7 +172,7 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
-              {!user && (
+              {!user && ready && (
                 <li className="py-3">
                   <Link to="/signin" className="btn btn-primary w-full">
                     Sign in or create account
@@ -171,5 +184,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </header>
+    </>
   )
 }

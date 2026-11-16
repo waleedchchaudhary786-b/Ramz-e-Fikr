@@ -357,6 +357,10 @@ create policy reports_insert on public.reports for insert to authenticated with 
 drop policy if exists reports_read on public.reports;
 create policy reports_read on public.reports for select to authenticated using (public.is_owner());
 
+drop policy if exists reports_delete on public.reports;
+create policy reports_delete on public.reports for delete to authenticated using (public.is_owner());
+create unique index if not exists reports_once on public.reports (comment_id, reporter);
+
 -- ---------- starting data ----------
 
 -- A short starter list. Owners: edit this in Table Editor > banned_terms.

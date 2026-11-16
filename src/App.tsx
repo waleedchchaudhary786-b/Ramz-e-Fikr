@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { PageTransition } from './utils/motion'
+import { Pen } from './components/Doodles'
 import { RouterProvider, useRouter } from './utils/router'
 import { SessionProvider } from './services/session'
 import { InkFilters } from './components/Symbols'
@@ -6,7 +8,7 @@ import Navbar from './components/Navbar'
 import Ticker from './components/Ticker'
 import Footer from './components/Footer'
 import HomeView from './views/HomeView'
-import PlaceholderView, { SignInPreview } from './views/PlaceholderView'
+import NotFoundView, { SignInPreview } from './views/PlaceholderView'
 import ArticlesView from './views/ArticlesView'
 import MotionsView from './views/MotionsView'
 import FloorView from './views/FloorView'
@@ -44,7 +46,7 @@ function Routes() {
     case '/signin':
       return <SignInPreview />
     default:
-      return <PlaceholderView info symbol="dagger" title="Page not found" purpose="That page is not in the archive." phase="no phase: the address is wrong" />
+      return <NotFoundView />
   }
 }
 
@@ -59,6 +61,29 @@ function StoreNotice() {
         Close
       </button>
     </div>
+  )
+}
+
+/** A pen that appears once you have scrolled, and carries you back to the top. */
+function BackToTop() {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const on = () => setShow(window.scrollY > 900)
+    on()
+    window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
+  return (
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      aria-label="Back to top"
+      tabIndex={show ? 0 : -1}
+      className="group fixed right-4 bottom-4 z-40 grid h-12 w-12 place-items-center border border-oxblood bg-ivory text-oxblood shadow-[3px_3px_0_var(--color-gold)] transition-[transform,opacity] duration-300 hover:-translate-y-1 md:right-6 md:bottom-6"
+      style={{ opacity: show ? 1 : 0, transform: show ? undefined : 'translateY(20px)', pointerEvents: show ? 'auto' : 'none' }}
+    >
+      <Pen size={26} style={{ transform: 'rotate(180deg)' }} />
+    </button>
   )
 }
 
@@ -81,6 +106,7 @@ function Shell() {
       <LoginNudge />
       <SearchPalette />
       <StoreNotice />
+      <BackToTop />
     </div>
   )
 }

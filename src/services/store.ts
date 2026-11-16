@@ -42,6 +42,12 @@ type State = {
   posts: FloorPost[]
   drafts: Draft[]
   notices: Notice[]
+  /** how many people liked each item (connected mode: everyone's likes) */
+  likeCounts: Record<string, number>
+  /** ids of replies that readers have reported (owners only see this filled) */
+  reported: string[]
+  /** ids of replies this visitor reported during this visit */
+  myReports: string[]
   /** the last thing that failed to save, shown as a small message */
   error: string | null
 }
@@ -54,6 +60,9 @@ const seed: State = {
   bookmarks: [],
   drafts: [],
   notices: [],
+  likeCounts: {},
+  reported: [],
+  myReports: [],
   error: null,
   posts: [
     { id: 's1', authorId: 'seed', thread: 'prompt', author: 'Areeba', stance: 'For', at: now - 3 * day, text: 'Yes. If you can only argue what you already believe, you are not debating, you are testifying.' },
@@ -65,7 +74,7 @@ const seed: State = {
   ],
 }
 
-const empty: State = { likes: [], bookmarks: [], posts: [], drafts: [], notices: [], error: null }
+const empty: State = { likes: [], bookmarks: [], posts: [], drafts: [], notices: [], likeCounts: {}, reported: [], myReports: [], error: null }
 // Connected: start empty and fill from the database. Local: this browser's saved copy.
 let state: State = CONNECTED ? empty : load()
 const listeners = new Set<() => void>()
@@ -81,6 +90,9 @@ function load(): State {
         ...seed,
         ...saved,
         error: null,
+        likeCounts: Object.fromEntries((saved.likes ?? []).map((k) => [k, 1])),
+        reported: saved.reported ?? [],
+        myReports: saved.myReports ?? [],
         posts: (saved.posts ?? seed.posts).map((p) => ({ ...p, authorId: p.authorId ?? 'preview-member' })),
         drafts: (saved.drafts ?? []).map((d) => ({ ...d, postedById: d.postedById ?? 'preview-member' })),
       }
@@ -123,14 +135,21 @@ const ms = (v: unknown) => (v ? new Date(v as string).getTime() : 0)
 export async function hydrate(userId: string | null) {
   if (!supabase) return
   me = userId
-  const [c, a, l, b, n] = await Promise.all([
+  const [c, a, l, b, n, all, rep] = await Promise.all([
     supabase.from('comments').select('id, thread, body, stance, flagged, created_at, edited_at, author, profiles(display_name)').order('created_at'),
     supabase.from('articles').select('id, title, author_name, ramz_line, body, status, review_note, posted_by, updated_at, profiles(display_name)').order('updated_at', { ascending: false }),
     userId ? supabase.from('likes').select('item_key').eq('user_id', userId) : Promise.resolve({ data: [] as Row[] }),
     userId ? supabase.from('bookmarks').select('item_key').eq('user_id', userId) : Promise.resolve({ data: [] as Row[] }),
     userId ? supabase.from('notifications').select('id, kind, body, link, read, created_at').order('created_at', { ascending: false }).limit(30) : Promise.resolve({ data: [] as Row[] }),
+    supabase.from('likes').select('item_key').limit(5000),
+    userId ? supabase.from('reports').select('comment_id') : Promise.resolve({ data: [] as Row[] }),
   ])
+  const likeCounts: Record<string, number> = {}
+  for (const r of (all.data ?? []) as Row[]) likeCounts[r.item_key as string] = (likeCounts[r.item_key as string] ?? 0) + 1
   set({
+    likeCounts,
+    reported: [...new Set(((rep.data ?? []) as Row[]).map((r) => r.comment_id as string))],
+    myReports: state.myReports,
     error: 'error' in c && c.error ? 'Could not reach the database. Check SETUP.md.' : null,
     posts: ((c.data ?? []) as Row[]).map((r) => ({
       id: r.id as string,
@@ -188,7 +207,8 @@ export const actions = {
 
   toggleLike: (key: string) => {
     const on = !state.likes.includes(key)
-    set({ ...state, likes: toggle(state.likes, key) })
+    const count = Math.max(0, (state.likeCounts[key] ?? 0) + (on ? 1 : -1))
+    set({ ...state, likes: toggle(state.likes, key), likeCounts: { ...state.likeCounts, [key]: count } })
     if (supabase && me) {
       const uid = me
       send(() => (on ? supabase!.from('likes').insert({ user_id: uid, item_key: key }) : supabase!.from('likes').delete().eq('user_id', uid).eq('item_key', key)))
@@ -236,6 +256,20 @@ export const actions = {
   deletePost: (id: string) => {
     set({ ...state, posts: state.posts.filter((p) => p.id !== id) })
     send(() => supabase!.from('comments').delete().eq('id', id))
+  },
+  /** any member: flag a reply for the owners to look at */
+  reportPost: (id: string, reason = '') => {
+    if (state.myReports.includes(id)) return
+    set({ ...state, myReports: [...state.myReports, id], reported: CONNECTED ? state.reported : [...state.reported, id] })
+    if (supabase && me) {
+      const uid = me
+      send(() => supabase!.from('reports').insert({ comment_id: id, reporter: uid, reason }))
+    }
+  },
+  /** owner: dismiss the reports on a reply */
+  clearReports: (id: string) => {
+    set({ ...state, reported: state.reported.filter((r) => r !== id) })
+    send(() => supabase!.from('reports').delete().eq('comment_id', id))
   },
   /** owner: release a reply that the language check held */
   allowPost: (id: string) => {
