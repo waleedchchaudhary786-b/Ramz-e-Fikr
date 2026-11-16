@@ -3,10 +3,13 @@
    Only the project URL and the public "anon" key belong here. Never put the
    service_role key anywhere in this project. */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { SUPABASE_PUBLIC_KEY, SUPABASE_URL } from '../config'
 
-const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim()
-// Supabase now calls the public key the "publishable" key (sb_publishable_...); older projects call it "anon". Either works.
-const key = ((import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) as string | undefined)?.trim()
+// "off" in .env forces local preview mode, e.g. VITE_SUPABASE_URL=off
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim()
+const envKey = ((import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) as string | undefined)?.trim()
+const url = envUrl === 'off' ? '' : envUrl || SUPABASE_URL
+const key = envUrl === 'off' ? '' : envKey || SUPABASE_PUBLIC_KEY
 
 export const supabase: SupabaseClient | null =
   url && key
