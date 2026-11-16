@@ -3,8 +3,8 @@
 -- Editor and press Run. It is safe to run again: nothing is duplicated
 -- and no data is deleted.
 --
--- STEP FOR YOU: put the three owner emails in the block marked
--- "OWNER EMAILS" near the bottom before running.
+-- AFTER THIS: run supabase/owners.example.sql with the three real owner
+-- emails filled in (keep your filled-in copy out of GitHub).
 -- =====================================================================
 
 -- ---------- tables ----------
@@ -365,13 +365,9 @@ insert into public.banned_terms (term) values
 on conflict do nothing;
 
 -- ===================== OWNER EMAILS =====================
--- Replace the three example addresses with the real owner emails
--- (the addresses they will sign in with), then run the file.
-insert into public.owner_emails (email) values
-  ('owner-one@example.com'),
-  ('owner-two@example.com'),
-  ('owner-three@example.com')
-on conflict do nothing;
+-- The three owner emails are NOT kept in this file, so they are never
+-- published with the code. After running this file, run a second small
+-- query (see supabase/owners.example.sql) with the real addresses.
 -- ========================================================
 
 -- If an owner signed up before their email was added above, promote them now.

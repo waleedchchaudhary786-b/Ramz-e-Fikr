@@ -15,16 +15,16 @@ You only ever copy two **public** values out of Supabase: the Project URL and th
    (Mumbai or Singapore).
 3. Wait a minute or two for the project to finish setting up.
 
-## 2. Set the three owners, then create the tables
+## 2. Create the tables, then set the three owners
 
-1. Open `supabase/schema.sql` from this folder in Notepad (or any editor).
-2. Near the bottom, find the block marked **OWNER EMAILS** and replace the three
-   example addresses with the three real owner emails (the addresses they will sign in with).
-3. In Supabase, open **SQL Editor**, click **New query**, paste in the whole file and press **Run**.
-   You should see "Success. No rows returned".
+1. In Supabase, open **SQL Editor**, click **New query**, paste in the whole of
+   `supabase/schema.sql` and press **Run**. You should see "Success. No rows returned".
+2. Copy `supabase/owners.example.sql` to `supabase/owners.sql`, replace the three example
+   addresses with the real owner emails (the addresses they will sign in with), then paste
+   that into a new query and **Run** it.
 
-Running the file again later is safe. To change an owner later, edit the `owner_emails`
-table in **Table Editor**, and change that person's `role` in the `profiles` table.
+`owners.sql` is ignored by git, so the owner emails are never uploaded with the code.
+Running either file again later is safe.
 
 ## 3. Set up sign-in emails
 
