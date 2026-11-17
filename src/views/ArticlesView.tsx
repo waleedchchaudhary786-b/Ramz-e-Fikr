@@ -4,7 +4,7 @@ import { Doodle, Reveal, RevealItem, StampIn, Stick } from '../utils/motion'
 import { Pen, Scribble } from '../components/Doodles'
 import { Link, useRouter } from '../utils/router'
 import { Divider, Stamp, Sym } from '../components/Symbols'
-import { Reaction } from '../components/Bits'
+import { Filter, Reaction } from '../components/Bits'
 import { getArticleDetail, useArticles } from '../services/store'
 import { useSession } from '../services/session'
 import { Thread } from './FloorView'
@@ -19,6 +19,7 @@ export default function ArticlesView() {
   const { user } = useSession()
   const articles = useArticles()
   const slug = path.split('/')[2]
+  const [cat, setCat] = useState<string>('All')
   const article = articles.find((a) => a.slug === slug)
   if (slug && article) return <Reader a={article} all={articles} />
   if (slug)
@@ -42,8 +43,11 @@ export default function ArticlesView() {
         note="Because an idea without a sentence is just noise."
       />
       <div className="wrap">
-        <Reveal stagger onMount className="grid gap-8 md:grid-cols-2">
-          {articles.map((a, i) => (
+        <div className="mb-8">
+          <Filter label="Shelf" options={[...new Set(articles.map((a) => a.category))]} value={cat} onChange={setCat} />
+        </div>
+        <Reveal stagger onMount key={cat} className="grid gap-8 md:grid-cols-2">
+          {articles.filter((a) => cat === 'All' || a.category === cat).map((a, i) => (
             <RevealItem key={a.slug} className={i === 0 ? 'md:col-span-2' : ''}>
               <Link to={`/articles/${a.slug}`} className="group card flex h-full flex-col md:flex-row">
                 <span className="flex shrink-0 items-center justify-between bg-oxblood px-5 py-2 text-ivory md:w-12 md:flex-col md:px-0 md:py-5">

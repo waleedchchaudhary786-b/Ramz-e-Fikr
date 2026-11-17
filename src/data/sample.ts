@@ -1,3 +1,5 @@
+import { extraArticles, extraMotions, extraPrompts, extraResourceDetails, extraResources, extraTerms, resourceAdditions } from './extra-content'
+
 /* SAMPLE CONTENT for local preview. Replace with real entries (or connect
    Supabase in Phase 5) before launch. Every item here is a placeholder. */
 
@@ -31,7 +33,7 @@ export type Resource = {
   date: string
 }
 
-export const articles: Article[] = [
+const baseArticles: Article[] = [
   {
     slug: 'rebuttal-is-listening',
     title: 'Rebuttal is mostly listening',
@@ -79,6 +81,9 @@ export const articles: Article[] = [
     readMins: 5,
   },
 ]
+
+/** every essay, newest first */
+export const articles: Article[] = [...baseArticles, ...extraArticles].sort((a, b) => b.date.localeCompare(a.date))
 
 export const motions: Motion[] = [
   {
@@ -163,17 +168,17 @@ export const moreMotions: Motion[] = [
   { slug: 'exam-boards', text: 'This House would abolish matriculation board exams', format: 'WSDC', theme: 'Education', date: '2026-10-09' },
   { slug: 'water-pricing', text: 'This House would price canal water at its true cost', format: 'BP', theme: 'Environment', date: '2026-10-02' },
 ]
-export const allMotions: Motion[] = [...motions, ...moreMotions]
+export const allMotions: Motion[] = [...motions, ...moreMotions, ...extraMotions]
 
 export const moreResources: Resource[] = [
   { slug: 'poi-drills', title: 'Twenty drills for points of information', kind: 'Worksheet', summary: 'Short partner exercises for offering and taking POIs without losing your thread.', date: '2026-10-20' },
   { slug: 'adjudication-notes', title: 'How adjudicators actually decide', kind: 'Lecture notes', summary: 'What a panel discusses after you leave the room, and how to speak to it.', date: '2026-10-12' },
   { slug: 'smog-casefile', title: 'Casefile: smog season', kind: 'Casefile', summary: 'Sources, numbers and the usual clashes on air quality in Punjab.', date: '2026-10-05' },
 ]
-export const allResources: Resource[] = [...resources, ...moreResources]
+export const allResources: Resource[] = [...resources, ...moreResources, ...extraResources].sort((a, b) => b.date.localeCompare(a.date))
 
 export type Term = { term: string; urdu: string; meaning: string }
-export const glossary: Term[] = [
+const baseGlossary: Term[] = [
   { term: 'Burden', urdu: 'بارِ ثبوت', meaning: 'What a side must prove to win. Name yours early and hold the other side to theirs.' },
   { term: 'Clash', urdu: 'ٹکراؤ', meaning: 'A point where the two sides directly disagree. Rounds are decided on clashes, not on speeches.' },
   { term: 'Extension', urdu: 'توسیع', meaning: 'New material a closing team adds that the opening team on its bench did not make.' },
@@ -187,9 +192,12 @@ export const glossary: Term[] = [
   { term: 'Whip', urdu: 'وہپ', meaning: 'The last speaker on a bench, who summarises the debate and adds no new arguments.' },
 ]
 
+export const glossary: Term[] = [...baseGlossary, ...extraTerms].sort((a, b) => a.term.localeCompare(b.term))
+
 export const pastPrompts = [
   { week: 'Week of 2 November 2026', text: 'Is a persuasive speech with a false statistic still a good speech?' },
   { week: 'Week of 26 October 2026', text: 'Should novices be allowed to choose their side?' },
+  ...extraPrompts,
 ]
 
 /* ---------- resource pages (sample text) ---------- */
@@ -203,6 +211,16 @@ export type ResourceDetail = {
   sections: ResourceSection[]
   example?: { title: string; lines: string[] }
   mistakes: string[]
+  /** short definitions of the ideas the resource relies on */
+  keyIdeas?: { term: string; text: string }[]
+  /** practice exercises */
+  drills?: { name: string; time: string; steps: string[] }[]
+  /** lines a speaker can borrow */
+  phrases?: string[]
+  /** a pre-round checklist */
+  checklist?: string[]
+  /** links onward: "article:slug" or "resource:slug" */
+  related?: string[]
 }
 
 export const resourceDetails: Record<string, ResourceDetail> = {
@@ -282,4 +300,13 @@ export const resourceDetails: Record<string, ResourceDetail> = {
     example: { title: 'A framing line you can borrow', lines: ['"This debate is not about whether smog is bad. It is about who should pay to reduce it, and whether they can."'] },
     mistakes: ['Making up statistics.', 'Blaming a single source.', 'Ignoring enforcement: a ban nobody enforces is not a policy.'],
   },
+}
+
+/* fold in the extra resource pages and the richer sections for the originals */
+Object.assign(resourceDetails, extraResourceDetails)
+for (const [slug, add] of Object.entries(resourceAdditions)) {
+  const base = resourceDetails[slug]
+  if (!base) continue
+  const { moreSections, ...rest } = add
+  resourceDetails[slug] = { ...base, ...rest, sections: [...base.sections, ...(moreSections ?? [])] }
 }

@@ -8,24 +8,34 @@ import { Link, useRouter } from '../utils/router'
 import { Reveal, Stick } from '../utils/motion'
 import { Divider, Sym } from '../components/Symbols'
 import { Scribble } from '../components/Doodles'
-import { allResources, formatDate, glossary, resourceDetails } from '../data/sample'
+import { allResources, articles, formatDate, glossary, resourceDetails } from '../data/sample'
 
 const KINDS = ['Guide', 'Casefile', 'Worksheet', 'Lecture notes'] as const
+const LEVELS = ['Novice', 'Intermediate', 'Any level'] as const
 const TILTS = ['-1.2deg', '0.9deg', '-0.5deg', '1.4deg', '-0.9deg', '0.6deg']
 
 export function ResourcesView() {
   const { path } = useRouter()
   const slug = path.split('/')[2]
   const [kind, setKind] = useState<(typeof KINDS)[number] | 'All'>('All')
+  const [level, setLevel] = useState<(typeof LEVELS)[number] | 'All'>('All')
   if (slug) return <ResourceReader slug={slug} />
-  const list = allResources.filter((r) => kind === 'All' || r.kind === kind)
+  const list = allResources.filter(
+    (r) => (kind === 'All' || r.kind === kind) && (level === 'All' || resourceDetails[r.slug]?.level === level),
+  )
   return (
     <>
       <PageHead symbol="section" title="Resources" purpose="Guides, casefiles and worksheets, filed like a library catalogue."
         note="Pull a card. Open it. Take what you need."
       />
       <div className="wrap">
-        <Filter label="Drawer" options={KINDS} value={kind} onChange={setKind} />
+        <div className="flex flex-col gap-3">
+          <Filter label="Drawer" options={KINDS} value={kind} onChange={setKind} />
+          <Filter label="Level" options={LEVELS} value={level} onChange={setLevel} />
+        </div>
+        <p className="meta mt-4">
+          {list.length} of {allResources.length} cards
+        </p>
         <ul className="mt-8 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout" initial={false}>
             {list.map((r, i) => (
@@ -51,8 +61,15 @@ export function ResourcesView() {
                     </Link>
                   </h2>
                   <p className="mt-1 text-[0.9375rem] leading-[1.55rem] text-charcoal">{r.summary}</p>
-                  <p className="mt-2 text-sm font-bold text-oxblood">
-                    Open <span aria-hidden="true" className="arrow">⟶</span>
+                  <p className="mt-2 flex items-baseline justify-between gap-3 text-sm">
+                    <span className="font-bold text-oxblood">
+                      Open <span aria-hidden="true" className="arrow">⟶</span>
+                    </span>
+                    {resourceDetails[r.slug] && (
+                      <span className="font-mono text-xs text-charcoal">
+                        {resourceDetails[r.slug].level} · {resourceDetails[r.slug].time}
+                      </span>
+                    )}
                   </p>
                 </div>
               </motion.li>
@@ -156,7 +173,20 @@ function ResourceReader({ slug }: { slug: string }) {
       </>
     )
   const d = resourceDetails[slug]
-  const others = allResources.filter((x) => x.slug !== slug).slice(0, 2)
+  const related = (resourceDetails[slug]?.related ?? [])
+    .map((key) => {
+      const [k, s] = key.split(':')
+      if (k === 'article') {
+        const a = articles.find((x) => x.slug === s)
+        return a && { slug: s, to: `/articles/${s}`, kind: 'Essay', title: a.title, summary: a.ramz }
+      }
+      const o = allResources.find((x) => x.slug === s)
+      return o && { slug: s, to: `/resources/${s}`, kind: o.kind, title: o.title, summary: o.summary }
+    })
+    .filter((x): x is { slug: string; to: string; kind: string; title: string; summary: string } => !!x)
+  const others = related.length
+    ? related
+    : allResources.filter((x) => x.slug !== slug).slice(0, 2).map((o) => ({ ...o, to: `/resources/${o.slug}` }))
   return (
     <article className="wrap pt-10 md:pt-14">
       <div className="mx-auto max-w-3xl">
@@ -196,6 +226,24 @@ function ResourceReader({ slug }: { slug: string }) {
               </p>
             </Reveal>
 
+            {d.keyIdeas && d.keyIdeas.length > 0 && (
+              <Reveal>
+                <section className="mt-10" aria-labelledby="ideas-h">
+                  <h2 id="ideas-h" className="label !font-bold !text-ink">
+                    Key ideas
+                  </h2>
+                  <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {d.keyIdeas.map((k, i) => (
+                      <div key={k.term} className="index-card px-5 pt-2.5 pb-6" style={{ '--tilt': TILTS[i % TILTS.length] } as CSSProperties}>
+                        <dt className="font-display text-lg font-bold text-oxblood">{k.term}</dt>
+                        <dd className="mt-1 text-[0.9375rem] leading-[1.55rem] text-charcoal">{k.text}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              </Reveal>
+            )}
+
             <div className="ledger mt-12">
               {d.sections.map((sec, i) => (
                 <Reveal key={sec.heading}>
@@ -234,6 +282,69 @@ function ResourceReader({ slug }: { slug: string }) {
               </Stick>
             )}
 
+            {d.drills && d.drills.length > 0 && (
+              <Reveal>
+                <section className="mt-14" aria-labelledby="drills-h">
+                  <h2 id="drills-h" className="text-2xl font-bold">
+                    Practise it
+                  </h2>
+                  <Scribble className="mt-1 block h-2.5 w-24 text-oxblood" />
+                  <ol className="mt-5 grid gap-5 sm:grid-cols-2">
+                    {d.drills.map((dr, i) => (
+                      <li key={dr.name} className="border border-ink/70 bg-ivory px-5 py-5">
+                        <p className="flex items-baseline justify-between gap-3 font-mono text-xs tracking-[0.12em] uppercase">
+                          <span className="text-oxblood">Drill {String(i + 1).padStart(2, '0')}</span>
+                          <span className="text-charcoal">{dr.time}</span>
+                        </p>
+                        <h3 className="mt-3 font-display text-xl font-bold">{dr.name}</h3>
+                        <ol className="mt-3 space-y-2">
+                          {dr.steps.map((st, j) => (
+                            <li key={st} className="flex gap-3 text-[0.9375rem] leading-[1.55rem]">
+                              <span className="numeral shrink-0 text-lg leading-6 text-oxblood">{j + 1}</span>
+                              <span>{st}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              </Reveal>
+            )}
+
+            {d.phrases && d.phrases.length > 0 && (
+              <Stick rest={-0.7} className="torn-wrap relative mt-14">
+                <span className="tape -top-2.5 left-10 z-10 -rotate-6" aria-hidden="true" />
+                <section className="torn bg-parchment px-7 py-9" aria-labelledby="phrases-h">
+                  <h2 id="phrases-h" className="hand text-3xl text-oxblood">
+                    Lines you can borrow
+                  </h2>
+                  <ul className="mt-4 space-y-3">
+                    {d.phrases.map((ph) => (
+                      <li key={ph} className="border-l-2 border-gold pl-4 font-display text-lg italic">
+                        {ph}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              </Stick>
+            )}
+
+            {d.checklist && d.checklist.length > 0 && (
+              <Reveal>
+                <section className="mt-14 border border-ink/70 px-6 py-6" aria-labelledby="check-h">
+                  <h2 id="check-h" className="label !font-bold !text-ink">
+                    Before you stand up
+                  </h2>
+                  <ul className="mt-3">
+                    {d.checklist.map((c) => (
+                      <Tick key={c} text={c} />
+                    ))}
+                  </ul>
+                </section>
+              </Reveal>
+            )}
+
             <Reveal>
               <section className="mt-12 border-t-2 border-oxblood pt-4">
                 <h2 className="label !font-bold !text-ink">Common mistakes</h2>
@@ -257,11 +368,11 @@ function ResourceReader({ slug }: { slug: string }) {
         </div>
 
         <Divider className="my-12" />
-        <h2 className="label !font-bold !text-ink">Next in the drawer</h2>
-        <ul className="mt-5 grid gap-6 sm:grid-cols-2">
+        <h2 className="label !font-bold !text-ink">{related.length ? 'Read next' : 'Next in the drawer'}</h2>
+        <ul className={`mt-5 grid gap-6 sm:grid-cols-2 ${others.length > 2 ? 'lg:grid-cols-3' : ''}`}>
           {others.map((o, i) => (
             <li key={o.slug}>
-              <Link to={`/resources/${o.slug}`} className="index-card group px-5 pt-2.5 pb-9" style={{ '--tilt': ['-1deg', '0.8deg'][i] } as CSSProperties}>
+              <Link to={o.to} className="index-card group block h-full px-5 pt-2.5 pb-9" style={{ '--tilt': ['-1deg', '0.8deg', '-0.4deg'][i % 3] } as CSSProperties}>
                 <span className="block font-mono text-xs tracking-[0.12em] text-oxblood uppercase">{o.kind}</span>
                 <span className="mt-4 block font-display text-lg leading-snug font-bold">{o.title}</span>
                 <span className="mt-1 block text-[0.9375rem] leading-[1.55rem] text-charcoal">{o.summary}</span>

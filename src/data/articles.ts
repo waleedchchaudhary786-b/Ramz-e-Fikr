@@ -24,6 +24,8 @@ export type ArticleDetail = {
   note?: string
 }
 
+import { extraArticleDetails } from './extra-content'
+
 export const articleDetails: Record<string, ArticleDetail> = {
   'rebuttal-is-listening': {
     brief: [
@@ -191,6 +193,8 @@ export const articleDetails: Record<string, ArticleDetail> = {
     note: 'This is sample text written to show how an essay page looks. Replace it with a real essay before launch.',
   },
 }
+
+Object.assign(articleDetails, extraArticleDetails)
 
 /** Turn plain typed text into blocks: "## " starts a heading, "> " a pull quote, "- " a list item. */
 export function toBlocks(text: string): Block[] {

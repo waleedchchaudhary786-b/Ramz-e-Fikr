@@ -6,7 +6,7 @@ import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
 import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Seal, Sparks, Star } from '../components/Doodles'
 import { useArticles, useStore } from '../services/store'
 import { pickMotion } from './MotionsView'
-import { allMotions, allResources, formatDate, glossary, motions, resources, weeklyPrompt } from '../data/sample'
+import { allMotions, allResources, formatDate, glossary, motions, weeklyPrompt } from '../data/sample'
 
 /** Section number sitting in the notebook margin (desktop only). */
 function MarginNo({ n, label }: { n: string; label: string }) {
@@ -221,7 +221,7 @@ export default function HomeView() {
                 }
               />
               <ul className="mt-6 px-1">
-                {resources.slice(0, 3).map((r, i) => (
+                {allResources.slice(0, 3).map((r, i) => (
                   <li key={r.slug} className={i === 0 ? '' : '-mt-3'} style={{ marginLeft: ['0', '1.5rem', '0.5rem'][i] }}>
                     <Link
                       to={`/resources/${r.slug}`}
