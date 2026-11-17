@@ -75,25 +75,3 @@ export function SectionHead({
     </div>
   )
 }
-
-/** SVG filters used by .stamp and the hero brush stroke. Mount once. */
-export function InkFilters() {
-  return (
-    <svg aria-hidden="true" width="0" height="0" style={{ position: 'absolute' }}>
-      <defs>
-        <filter id="ink-bleed" x="-5%" y="-10%" width="110%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" />
-        </filter>
-        <filter id="sketch" x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" />
-        </filter>
-        <filter id="brush" x="-5%" y="-20%" width="110%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.35" numOctaves="3" seed="8" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="16" />
-        </filter>
-      </defs>
-    </svg>
-  )
-}
