@@ -8,6 +8,7 @@ import { Link, useRouter } from '../utils/router'
 import { Reveal, Stick } from '../utils/motion'
 import { Divider, Sym } from '../components/Symbols'
 import { Scribble } from '../components/Doodles'
+import { SourcesList, withRefs } from '../components/Sources'
 import { allResources, articles, formatDate, glossary, resourceDetails } from '../data/sample'
 
 const KINDS = ['Guide', 'Casefile', 'Worksheet', 'Lecture notes'] as const
@@ -139,9 +140,12 @@ export function GlossaryView() {
 /** A point you can tick off as you work through it. */
 function Tick({ text }: { text: string }) {
   const [done, setDone] = useState(false)
+  /* source markers sit outside the button: a button cannot contain buttons */
+  const refs = text.match(/\[\d+\]/g)?.join('') ?? ''
+  const plain = refs ? text.replace(/\s?\[\d+\]/g, '') : text
   return (
-    <li>
-      <button type="button" aria-pressed={done} onClick={() => setDone((d) => !d)} className="group flex w-full gap-3 py-1 text-left text-[1.0625rem] leading-relaxed">
+    <li className="flex items-start gap-1">
+      <button type="button" aria-pressed={done} onClick={() => setDone((d) => !d)} className="group flex gap-3 py-1 text-left text-[1.0625rem] leading-relaxed">
         <span className="relative mt-1.5 grid h-5 w-5 shrink-0 place-items-center border-[1.5px] border-oxblood">
           <motion.span
             aria-hidden="true"
@@ -153,8 +157,9 @@ function Tick({ text }: { text: string }) {
             ✓
           </motion.span>
         </span>
-        <span className={`measure transition-opacity duration-300 ${done ? 'opacity-50' : ''}`}>{text}</span>
+        <span className={`measure transition-opacity duration-300 ${done ? 'opacity-50' : ''}`}>{plain}</span>
       </button>
+      {refs && <span className="pt-1 leading-relaxed">{withRefs(refs)}</span>}
     </li>
   )
 }
@@ -222,7 +227,7 @@ function ResourceReader({ slug }: { slug: string }) {
                 ))}
               </dl>
               <p className="measure mt-8 text-[1.0625rem] leading-[1.8] first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-6xl first-letter:leading-[0.85] first-letter:font-black first-letter:text-oxblood">
-                {d.intro}
+                {withRefs(d.intro)}
               </p>
             </Reveal>
 
@@ -253,7 +258,7 @@ function ResourceReader({ slug }: { slug: string }) {
                     </div>
                     <h2 className="text-2xl font-bold">{sec.heading}</h2>
                     <Scribble className="mt-1 block h-2.5 w-28 text-oxblood" />
-                    {sec.body && <p className="measure mt-3 text-[1.0625rem] leading-[1.8] text-charcoal">{sec.body}</p>}
+                    {sec.body && <p className="measure mt-3 text-[1.0625rem] leading-[1.8] text-charcoal">{withRefs(sec.body)}</p>}
                     <ul className="mt-3">
                       {sec.points.map((pt) => (
                         <Tick key={pt} text={pt} />
@@ -352,7 +357,7 @@ function ResourceReader({ slug }: { slug: string }) {
                   {d.mistakes.map((m) => (
                     <li key={m} className="flex gap-3 text-[1.0625rem]">
                       <Sym name="dagger" className="shrink-0" />
-                      <span className="measure">{m}</span>
+                      <span className="measure">{withRefs(m)}</span>
                     </li>
                   ))}
                 </ul>
@@ -362,6 +367,8 @@ function ResourceReader({ slug }: { slug: string }) {
         ) : (
           <p className="meta mt-10">The full text of this resource has not been added yet.</p>
         )}
+
+        <SourcesList slug={slug} />
 
         <div className="mt-8">
           <Reaction kind="bookmark" itemKey={`resource:${slug}`} />

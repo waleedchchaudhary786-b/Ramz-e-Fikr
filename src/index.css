@@ -592,3 +592,8 @@ html {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--color-gold);
 }
+
+/* a source entry flashes when its [n] marker is clicked */
+@keyframes src-flash { 0% { background: color-mix(in srgb, var(--color-gold) 35%, transparent); } 100% { background: transparent; } }
+.src-flash { animation: src-flash 1.6s ease-out; }
+@media (prefers-reduced-motion: reduce) { .src-flash { animation: none; outline: 2px solid var(--color-gold); } }

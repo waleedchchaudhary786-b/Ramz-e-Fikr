@@ -5,6 +5,7 @@ import { Pen, Scribble } from '../components/Doodles'
 import { Link, useRouter } from '../utils/router'
 import { Divider, Stamp, Sym } from '../components/Symbols'
 import { Filter, Reaction } from '../components/Bits'
+import { SourcesList } from '../components/Sources'
 import { getArticleDetail, useArticles } from '../services/store'
 import { useSession } from '../services/session'
 import { Thread } from './FloorView'
@@ -294,6 +295,8 @@ function Reader({ a, all }: { a: Article; all: Article[] }) {
               </section>
             </Stick>
           )}
+
+          <SourcesList slug={a.slug} />
 
           {detail?.note && (
             <p className="meta mt-8">

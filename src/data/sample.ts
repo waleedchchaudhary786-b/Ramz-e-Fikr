@@ -256,7 +256,7 @@ export const resourceDetails: Record<string, ResourceDetail> = {
     useWhen: 'An economics motion about Pakistan comes up and you need the shape of the argument fast.',
     intro: 'This casefile is a map, not a script. It sets out what each bench usually argues about an IMF programme and where the two sides actually collide, so that your prep time goes on the clash and not on background.',
     sections: [
-      { heading: 'Background you need', body: 'Learn the vocabulary first; half of these debates are lost on a muddled definition.', points: ['What a programme is, what conditions are, and who signs.', 'The difference between stabilisation (stopping a crisis) and growth (getting richer).', 'Why subsidies, the exchange rate and tax collection keep appearing in conditions.'] },
+      { heading: 'Background you need', body: 'Learn the vocabulary first; half of these debates are lost on a muddled definition. When a country borrows from the IMF, its government agrees to adjust its policies, and money is released as it meets measurable conditions. [1][2]', points: ['What a programme is, what conditions are, and who signs.', 'The difference between stabilisation (stopping a crisis) and growth (getting richer).', 'Why subsidies, the exchange rate and tax collection keep appearing in conditions.'] },
       { heading: 'What Proposition benches usually run', points: ['Credibility: lenders and investors return once a programme is in place.', 'Discipline: conditions force reforms that governments avoid on their own.', 'No alternative: the other sources of money come with worse terms.'] },
       { heading: 'What Opposition benches usually run', points: ['Burden: the cost of adjustment falls on those least able to pay.', 'Cycle: repeated programmes suggest the cure does not work.', 'Sovereignty: policy is set by lenders, not voters.'] },
       { heading: 'Clashes that keep coming up', points: ['Short-term pain against long-term credibility.', 'Who bears the cost of subsidy removal.', 'Whether the reforms would have been needed anyway.'] },
@@ -293,12 +293,12 @@ export const resourceDetails: Record<string, ResourceDetail> = {
     useWhen: 'Any environment or public-health motion set in Punjab.',
     intro: 'Smog motions come up every winter. This casefile gives you the causes, the usual policy options and the clashes, so you can spend prep on argument and not on trying to remember what a brick kiln has to do with it.',
     sections: [
-      { heading: 'Sources of the problem', body: 'Be careful with shares: they vary by study and by month. Describe the sources; do not invent percentages.', points: ['Crop residue burning after the rice harvest.', 'Vehicle exhaust, especially older diesel engines.', 'Brick kilns and small industry.', 'Weather: cold, still air traps what is emitted, which is why it peaks in November.'] },
-      { heading: 'Policy options that get debated', points: ['Closing schools and offices on the worst days.', 'Shutting or converting kilns and factories.', 'Paying farmers not to burn, or supplying machinery.', 'Restricting vehicles by age, type or day.'] },
+      { heading: 'Sources of the problem', body: 'Shares vary by study, by season and by who is counting, so always say whose estimate you are using. A 2026 report by the Pakistan Air Quality Initiative put Lahore\u2019s primary PM2.5 emissions at about 35% transport, 28% heavy industry and 17% brick kilns. The Punjab EPA rejected its findings, which is itself a useful point in a round. [1][2]', points: ['Vehicle exhaust, especially older diesel engines. [1]', 'Heavy industry and brick kilns. [1]', 'Crop residue burning after the rice harvest, estimated at around a fifth of smog in Punjab. [3]', 'Weather: in winter a temperature inversion traps what is emitted near the ground, which is why it peaks in November. [4][5]'] },
+      { heading: 'Policy options that get debated', points: ['Closing schools and offices on the worst days.', 'Shutting or converting kilns and factories.', 'Paying farmers not to burn, or supplying machinery such as shredders and Happy Seeders, which Punjab has subsidised. [3]', 'Restricting vehicles by age, type or day.'] },
       { heading: 'Usual clashes', points: ['School closures against factory closures: whose loss is easier to repair?', 'Provincial action against causes that cross the border.', 'New laws against the capacity to enforce the ones that exist.'] },
     ],
     example: { title: 'A framing line you can borrow', lines: ['"This debate is not about whether smog is bad. It is about who should pay to reduce it, and whether they can."'] },
-    mistakes: ['Making up statistics.', 'Blaming a single source.', 'Ignoring enforcement: a ban nobody enforces is not a policy.'],
+    mistakes: ['Making up statistics, or quoting one study\u2019s shares as settled fact.', 'Blaming a single source.', 'Ignoring enforcement: a ban nobody enforces is not a policy. [2]'],
   },
 }
 
