@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, Menu, Search, X } from 'lucide-react'
+import { LayoutDashboard, Search } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { DUR, EASE_CALM, EASE_SNAP, InkProgress, motion, useReducedMotion } from '../utils/motion'
 import { Link, useRouter } from '../utils/router'
@@ -36,6 +36,40 @@ export function Brand({ compact = false, stacked = false }: { compact?: boolean;
   )
 }
 
+/* ---- mobile menu motion ----
+   Opening: the sheet unrolls downward from the header, then the links slide in one by one.
+   Closing: the links slip away in reverse order, then the sheet rolls back up. */
+const sheet = {
+  closed: {
+    clipPath: 'inset(0% 0% 100% 0%)',
+    transition: { duration: 0.3, ease: EASE_CALM, when: 'afterChildren', staggerChildren: 0.035, staggerDirection: -1 },
+  },
+  open: {
+    clipPath: 'inset(0% 0% 0% 0%)',
+    transition: { duration: 0.4, ease: EASE_CALM, delayChildren: 0.12, staggerChildren: 0.055 },
+  },
+} as const
+const sheetItem = {
+  closed: { opacity: 0, x: -18, transition: { duration: 0.16, ease: EASE_CALM } },
+  open: { opacity: 1, x: 0, transition: { duration: DUR.base, ease: EASE_SNAP } },
+} as const
+const fadeOnly = {
+  closed: { opacity: 0, transition: { duration: 0.15 } },
+  open: { opacity: 1, transition: { duration: 0.15 } },
+} as const
+
+/** Three ink strokes that fold into a cross. */
+function MenuIcon({ open }: { open: boolean }) {
+  const bar = 'absolute left-1/2 h-[2px] w-[22px] -ml-[11px] bg-current transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.2,0.9,0.25,1.15)]'
+  return (
+    <span aria-hidden="true" className="relative block h-[22px] w-[22px]">
+      <span className={bar} style={{ top: 4, transform: open ? 'translateY(7px) rotate(45deg)' : 'none' }} />
+      <span className={bar} style={{ top: 11, transform: open ? 'scaleX(0)' : 'none', opacity: open ? 0 : 1 }} />
+      <span className={bar} style={{ top: 18, transform: open ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
+    </span>
+  )
+}
+
 export default function Navbar() {
   const { path } = useRouter()
   const { user, ready } = useSession()
@@ -51,6 +85,13 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => setOpen(false), [path])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
 
   const isActive = (to: string) => path === to || path.startsWith(to + '/')
 
@@ -131,7 +172,7 @@ export default function Navbar() {
           aria-label={open ? 'Close menu' : 'Open menu'}
           onClick={() => setOpen((o) => !o)}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          <MenuIcon open={open} />
         </button>
       </div>
 
@@ -150,14 +191,14 @@ export default function Navbar() {
             id="mobile-menu"
             aria-label="Main"
             className="absolute inset-x-0 top-full border-b border-ink bg-ivory shadow-[0_8px_0_rgba(23,23,23,0.06)] lg:hidden"
-            initial={{ opacity: 0, y: reduced ? 0 : -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: reduced ? 0 : -8 }}
-            transition={{ duration: DUR.fast, ease: EASE_CALM }}
+            variants={reduced ? fadeOnly : sheet}
+            initial="closed"
+            animate="open"
+            exit="closed"
           >
             <ul className="wrap py-2">
               {NAV.map((n) => (
-                <li key={n.to} className="border-b border-border-warm last:border-0">
+                <motion.li key={n.to} variants={reduced ? fadeOnly : sheetItem} className="border-b border-border-warm last:border-0">
                   <Link
                     to={n.to}
                     aria-current={isActive(n.to) ? 'page' : undefined}
@@ -170,20 +211,38 @@ export default function Navbar() {
                       ⟶
                     </span>
                   </Link>
-                </li>
+                </motion.li>
               ))}
               {!user && ready && (
-                <li className="py-3">
+                <motion.li variants={reduced ? fadeOnly : sheetItem} className="py-3">
                   <Link to="/signin" className="btn btn-primary w-full">
                     Sign in or create account
                   </Link>
-                </li>
+                </motion.li>
               )}
             </ul>
+            {/* a double rule along the bottom edge, like the foot of a printed page */}
+            <motion.div variants={reduced ? fadeOnly : sheetItem} aria-hidden="true" className="wrap pb-3">
+              <hr className="rule-double" />
+            </motion.div>
           </motion.nav>
         )}
       </AnimatePresence>
     </header>
+
+    {/* dims the page behind the open menu; tap it to close */}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          aria-hidden="true"
+          className="fixed inset-0 z-30 bg-ink/35 lg:hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: 0.3 } }}
+          exit={{ opacity: 0, transition: { duration: 0.3, delay: reduced ? 0 : 0.15 } }}
+          onClick={() => setOpen(false)}
+        />
+      )}
+    </AnimatePresence>
     </>
   )
 }
