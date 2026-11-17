@@ -3,6 +3,7 @@ import { PageTransition } from './utils/motion'
 import { Pen } from './components/Doodles'
 import { RouterProvider, useRouter } from './utils/router'
 import { SessionProvider } from './services/session'
+import { InkFilters } from './components/Symbols'
 import Navbar from './components/Navbar'
 import Ticker from './components/Ticker'
 import Footer from './components/Footer'
@@ -93,6 +94,7 @@ function Shell() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ivory focus:p-3">
         Skip to content
       </a>
+      <InkFilters />
       <Navbar />
       <Ticker />
       <main id="main" className="flex-1 overflow-x-clip">

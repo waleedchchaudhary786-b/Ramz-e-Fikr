@@ -18,7 +18,7 @@ function starPoints(cx: number, cy: number, R: number, r: number, rot = -90) {
 /** Sketched star: drawn twice, slightly off, like a pen going round again. */
 export function Star({ className, style, size = 28 }: P) {
   return (
-    <svg {...base} viewBox="0 0 40 40" width={size} height={size} className={`boil ${className ?? ''}`} style={style} strokeWidth="1.6">
+    <svg {...base} viewBox="0 0 40 40" width={size} height={size} className={`boil ${className ?? ''}`} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.6">
       <polygon points={starPoints(20, 21, 15, 6.5)} />
       <polygon points={starPoints(20.6, 20.4, 14, 6, -86)} opacity=".55" />
     </svg>
@@ -39,7 +39,7 @@ export function Sparks({ className, style, size = 30 }: P) {
 /** Dashed, looping arrow that points from one thing to the next. */
 export function CurlArrow({ className, style, size = 110 }: P) {
   return (
-    <svg {...base} viewBox="0 0 120 80" width={size} height={(size * 80) / 120} className={className} style={style} strokeWidth="1.8">
+    <svg {...base} viewBox="0 0 120 80" width={size} height={(size * 80) / 120} className={className} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.8">
       <path d="M4 60 C 26 22, 50 18, 58 36 C 64 52, 44 56, 46 40 C 48 20, 84 14, 108 30" strokeDasharray="6 6" />
       <path d="M96 20 L109 30 L95 38" />
     </svg>
@@ -59,7 +59,7 @@ export function Scribble({ className, style }: Omit<P, 'size'>) {
 /** Fountain pen, drawn at a slant. */
 export function Pen({ className, style, size = 64 }: P) {
   return (
-    <svg {...base} viewBox="0 0 64 64" width={size} height={size} className={`pen-write ${className ?? ''}`} style={style} strokeWidth="1.7">
+    <svg {...base} viewBox="0 0 64 64" width={size} height={size} className={`pen-write ${className ?? ''}`} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.7">
       <path d="M44 6 L58 20 L30 48 L16 34 Z" />
       <path d="M40 10 L54 24" />
       <path d="M16 34 L8 56 L30 48" />
@@ -75,7 +75,7 @@ export function BookStack({ className, style, labels }: Omit<P, 'size'> & { labe
   const h = 26
   const rows = labels.slice(0, 4)
   return (
-    <svg {...base} viewBox={`0 0 220 ${rows.length * h + 16}`} className={className} style={style} strokeWidth="1.6">
+    <svg {...base} viewBox={`0 0 220 ${rows.length * h + 16}`} className={className} style={{ filter: 'url(#sketch)', ...style }} strokeWidth="1.6">
       {rows.map((label, i) => {
         const x = [10, 4, 12, 0][i % 4]
         const y = 6 + i * h
@@ -126,7 +126,7 @@ export function Rosette({ className, style, size = 300 }: P) {
 /** The Ramz seal: the ف monogram ringed by the name and tagline, like a library stamp. */
 export function Seal({ className, style, size = 120 }: P) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 120 120" width={size} height={size} className={`seal ${className ?? ''}`} style={style}>
+    <svg aria-hidden="true" viewBox="0 0 120 120" width={size} height={size} className={`seal ${className ?? ''}`} style={{ filter: 'url(#ink-bleed)', ...style }}>
       <defs>
         <path id="seal-ring" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0" />
       </defs>
@@ -141,20 +141,6 @@ export function Seal({ className, style, size = 120 }: P) {
       <text x="60" y="74" textAnchor="middle" fill="currentColor" style={{ font: '700 40px var(--font-urdu)' }}>
         ف
       </text>
-    </svg>
-  )
-}
-
-/** A brush stroke with ragged ends, drawn once as a shape. It stretches to fill its box.
-    (Pre-drawn on purpose: live SVG distortion filters made scrolling slow.) */
-export function Brush({ className, style }: Omit<P, 'size'>) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 300 60" preserveAspectRatio="none" className={className} style={style} fill="currentColor">
-      <polygon points="6,2.8 15,3.3 24,4.9 33,2.8 42,3.0 51,3.4 60,1.6 69,3.1 78,3.6 87,4.3 96,1.2 105,2.1 114,1.2 123,4.4 132,3.9 141,1.0 150,5.1 159,5.0 168,3.7 177,3.5 186,1.5 195,0.9 204,3.1 213,1.1 222,1.6 231,1.9 240,0.9 249,2.8 258,2.7 267,4.5 276,3.1 285,3.6 294,3.0 299.3,9 299.6,15 294.4,22 298.8,28 296.1,35 296.9,41 298.7,48 294.9,53 294,57.7 285,56.8 276,56.0 267,59.2 258,59.2 249,58.5 240,57.9 231,56.2 222,55.8 213,56.1 204,55.1 195,58.2 186,56.6 177,58.5 168,56.5 159,59.0 150,58.5 141,54.8 132,55.7 123,58.8 114,56.9 105,59.1 96,56.5 87,55.1 78,57.6 69,58.2 60,56.0 51,55.2 42,56.3 33,59.0 24,58.1 15,55.3 6,55.9 0.8,52 3.9,45 0.7,39 2.5,32 1.3,26 1.6,19 5.8,12 4.8,7" />
-      {/* dry-brush streaks trailing off the right end */}
-      <polygon points="286,10 300,8.5 300,10.5 288,12" opacity=".75" />
-      <polygon points="284,30 300,29 300,31.5 286,32.5" opacity=".6" />
-      <polygon points="287,46 299,45 299,47 288,48" opacity=".7" />
     </svg>
   )
 }

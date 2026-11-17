@@ -3,7 +3,7 @@ import { CountUp, Doodle, Pressable, Reveal, RevealItem, StampIn, Stick, Sweep, 
 import { Link } from '../utils/router'
 import { useSession } from '../services/session'
 import { Divider, SectionHead, Stamp, Sym } from '../components/Symbols'
-import { BookStack, Brush, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Seal, Sparks, Star } from '../components/Doodles'
+import { BookStack, CurlArrow, FrameCorners, Pen, Rosette, Scribble, Seal, Sparks, Star } from '../components/Doodles'
 import { useArticles, useStore } from '../services/store'
 import { pickMotion } from './MotionsView'
 import { allMotions, allResources, formatDate, glossary, motions, resources, weeklyPrompt } from '../data/sample'
@@ -52,9 +52,10 @@ export default function HomeView() {
                 <h1 className="mt-4 text-[2.5rem] font-black sm:text-5xl md:text-6xl">
                   <WordReveal text="Where thought becomes" delay={0.15} />{' '}
                   <span className="relative inline-block px-3 text-ivory">
-                    <Sweep className="absolute -inset-x-1 top-[10%] bottom-0 block -rotate-1 text-oxblood" delay={0.45}>
-                      <Brush className="h-full w-full" />
-                    </Sweep>
+                    <Sweep
+                      className="absolute inset-x-0 top-[12%] bottom-[2%] block -rotate-1 bg-oxblood [filter:url(#brush)]"
+                      delay={0.45}
+                    />
                     <WordReveal className="relative italic" text="argument." delay={0.6} />
                     <Doodle className="absolute -top-5 -right-7 block text-oxblood" delay={0.95}>
                       <Sparks size={30} style={{ transform: 'rotate(150deg)' }} />

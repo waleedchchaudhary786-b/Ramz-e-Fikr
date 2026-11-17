@@ -68,26 +68,18 @@ function FlowTicker({ items }: { items: Item[] }) {
       }
       raf = requestAnimationFrame(tick)
     }
-    // run only while the strip is on screen and the tab is visible
-    let onScreen = true
-    const sync = () => {
+    const onVis = () => {
       cancelAnimationFrame(raf)
-      if (onScreen && !document.hidden) {
+      if (!document.hidden) {
         last = performance.now()
         raf = requestAnimationFrame(tick)
       }
     }
-    const io = new IntersectionObserver(([entry]) => {
-      onScreen = entry.isIntersecting
-      sync()
-    })
-    io.observe(track)
-    sync()
-    document.addEventListener('visibilitychange', sync)
+    raf = requestAnimationFrame(tick)
+    document.addEventListener('visibilitychange', onVis)
     return () => {
       cancelAnimationFrame(raf)
-      io.disconnect()
-      document.removeEventListener('visibilitychange', sync)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [])
 

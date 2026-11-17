@@ -1,5 +1,5 @@
 import { Doodle, Stick, Sweep, TypeReveal, WordReveal } from '../utils/motion'
-import { Brush, Sparks, Star } from '../components/Doodles'
+import { Sparks, Star } from '../components/Doodles'
 import { Link } from '../utils/router'
 import { useState } from 'react'
 import { useSession, type Role } from '../services/session'
@@ -37,9 +37,7 @@ export function PageHead({
             </p>
             {/* the title sits on a brush stroke, as on the posters */}
             <h1 className="relative mt-3 inline-block px-4 py-1 text-4xl font-black text-ivory md:px-5 md:text-5xl">
-              <Sweep className="absolute -inset-x-1 inset-y-0 block -rotate-1 text-oxblood" delay={0.1}>
-                <Brush className="h-full w-full" />
-              </Sweep>
+              <Sweep className="absolute inset-0 block -rotate-1 bg-oxblood [filter:url(#brush)]" delay={0.1} />
               <span className="relative">
                 <Sym name={symbol} tone="inherit" className="mr-3 text-gold" />
                 <WordReveal text={title} delay={0.25} />
