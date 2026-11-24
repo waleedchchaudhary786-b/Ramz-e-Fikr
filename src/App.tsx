@@ -12,6 +12,7 @@ import NotFoundView, { SignInPreview } from './views/PlaceholderView'
 import ArticlesView from './views/ArticlesView'
 import MotionsView from './views/MotionsView'
 import FloorView from './views/FloorView'
+import ForumView from './views/ForumView'
 import { GlossaryView, ResourcesView } from './views/LibraryViews'
 import { AboutView, DashboardView, DeskView } from './views/InfoViews'
 import LoginNudge from './components/LoginNudge'
@@ -33,6 +34,8 @@ function Routes() {
       return <MotionsView />
     case '/floor':
       return <FloorView />
+    case '/forum':
+      return <ForumView />
     case '/glossary':
       return <GlossaryView />
     case '/about':

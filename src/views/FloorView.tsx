@@ -31,7 +31,7 @@ function WithMentions({ text, names }: { text: string; names: string[] }) {
 }
 
 /** A discussion thread: replies, plus a composer for signed-in members. */
-export function Thread({ thread, withStance = false }: { thread: string; withStance?: boolean }) {
+export function Thread({ thread, withStance = false, locked = false }: { thread: string; withStance?: boolean; locked?: boolean }) {
   const { user } = useSession()
   const { posts, myReports } = useStore()
   const list = posts.filter((p) => p.thread === thread)
@@ -147,7 +147,7 @@ export function Thread({ thread, withStance = false }: { thread: string; withSta
       </ul>
       {list.length === 0 && <p className="meta py-4">No replies yet. Be the first.</p>}
 
-      {user ? (
+      {locked ? null : user ? (
         <form onSubmit={submit} className="mt-5">
           <label className="block">
             <span className="label">Your reply, as {user.name}</span>

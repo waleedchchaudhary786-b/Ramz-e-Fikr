@@ -4,7 +4,8 @@ import { Search as SearchIcon } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { DUR, EASE_SNAP, motion, useReducedMotion } from '../utils/motion'
 import { useRouter } from '../utils/router'
-import { useArticles } from '../services/store'
+import { useArticles, useStore } from '../services/store'
+import { boardOf } from '../data/forum'
 import { Sym, type SymbolName } from './Symbols'
 import { allMotions, allResources, glossary } from '../data/sample'
 import { pickMotion } from '../views/MotionsView'
@@ -17,6 +18,7 @@ export default function SearchPalette() {
   const reduced = !!useReducedMotion()
   const { navigate } = useRouter()
   const articles = useArticles()
+  const { topics } = useStore()
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [active, setActive] = useState(0)
@@ -52,8 +54,9 @@ export default function SearchPalette() {
       ...allMotions.map((m) => ({ key: 'm' + m.slug, motion: m.slug, to: '/motions', symbol: 'pilcrow' as const, kind: 'Motion', title: m.text, sub: `${m.format} · ${m.theme}` })),
       ...allResources.map((r) => ({ key: 'r' + r.slug, to: `/resources/${r.slug}`, symbol: 'section' as const, kind: r.kind, title: r.title, sub: r.summary })),
       ...glossary.map((g) => ({ key: 'g' + g.term, to: '/glossary', symbol: 'dagger' as const, kind: 'Term', title: `${g.term} · ${g.urdu}`, sub: g.meaning })),
+      ...topics.filter((t) => !t.flagged).map((t) => ({ key: 'f' + t.id, to: `/forum/${t.id}`, symbol: 'asterism' as const, kind: 'Thread', title: t.title, sub: `${boardOf(t.board).name} · ${t.author}` })),
     ],
-    [articles],
+    [articles, topics],
   )
   const hits = useMemo(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean)

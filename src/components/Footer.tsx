@@ -34,6 +34,7 @@ export default function Footer() {
         { to: '/resources', label: 'Resources' },
         { to: '/motions', label: 'Motions' },
         { to: '/floor', label: 'The Floor' },
+        { to: '/forum', label: 'Forum' },
         { to: '/glossary', label: 'Glossary' },
       ],
     },

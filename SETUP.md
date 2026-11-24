@@ -26,6 +26,11 @@ You only ever copy two **public** values out of Supabase: the Project URL and th
 `owners.sql` is ignored by git, so the owner emails are never uploaded with the code.
 Running either file again later is safe.
 
+**Already set up before the forum existed?** Run `supabase/forum.sql` once in a new query.
+It adds the forum's tables and rules and changes nothing else. (A new setup does not
+need it, because the same block is inside `schema.sql`.) Until it is run, the Forum page
+shows a short note asking an owner to do this, and the rest of the site works normally.
+
 ## 3. Set up sign-in emails
 
 1. In Supabase go to **Authentication > Emails** (Email Templates) and open the
@@ -79,6 +84,10 @@ causes are a typo in `.env` or step 2 not having been run.
   the word list in **Table Editor > banned_terms** (one lower-case word per row).
 - `@Name` in a reply sends that person a notice on their dashboard.
 - There can never be more than three owner emails.
+- Forum: any member can start a thread. Only the writer can edit it; the writer or an owner
+  can delete it, and its replies go with it. Editors and owners can pin and lock threads.
+  Nobody else can reply to a locked thread. Threads with a banned word are held like
+  replies. Writers get a notice when someone replies to their thread.
 
 ## Putting the site online (GitHub Pages)
 
