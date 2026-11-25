@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { PageTransition } from './utils/motion'
 import { Pen } from './components/Doodles'
 import { RouterProvider, useRouter } from './utils/router'
@@ -20,6 +20,9 @@ import StudioView from './views/StudioView'
 import SearchPalette from './components/Search'
 import { actions, useStore } from './services/store'
 
+// the tournament section loads only when someone opens it
+const TabView = lazy(() => import('./tab/TabView'))
+
 function Routes() {
   const { path } = useRouter()
   const top = '/' + (path.split('/')[1] ?? '')
@@ -36,6 +39,12 @@ function Routes() {
       return <FloorView />
     case '/forum':
       return <ForumView />
+    case '/tab':
+      return (
+        <Suspense fallback={<p className="wrap meta py-20">…</p>}>
+          <TabView />
+        </Suspense>
+      )
     case '/glossary':
       return <GlossaryView />
     case '/about':
@@ -58,7 +67,10 @@ function StoreNotice() {
   const { error } = useStore()
   if (!error) return null
   return (
-    <div role="alert" className="fixed inset-x-3 top-24 z-[80] mx-auto flex max-w-md items-start gap-3 border border-ink bg-parchment p-4 shadow-[4px_5px_0_rgba(23,23,23,0.12)]">
+    <div
+      role="alert"
+      className="fixed inset-x-3 top-24 z-[80] mx-auto flex max-w-md items-start gap-3 border border-ink bg-parchment p-4 shadow-[4px_5px_0_rgba(23,23,23,0.12)]"
+    >
       <p className="flex-1 text-[0.9375rem]">{error}</p>
       <button type="button" onClick={actions.clearError} className="min-h-11 px-2 font-mono text-[0.8125rem] text-oxblood underline">
         Close

@@ -1,57 +1,45 @@
 /* Site-info pages: About (with the user guide), The Desk, Dashboard. */
-import { Reveal, Stick } from "../utils/motion";
-import { Link } from "../utils/router";
-import { useSession } from "../services/session";
-import { actions, useStore, timeAgo, type Topic } from "../services/store";
-import { Fold } from "../components/Bits";
-import { Divider, Sym } from "../components/Symbols";
-import { FrameCorners } from "../components/Doodles";
-import { PageHead } from "./PlaceholderView";
-import { ReviewQueue, StatusStamp } from "./StudioView";
-import { allMotions, allResources, articles } from "../data/sample";
+import { Reveal, Stick } from '../utils/motion'
+import { Link } from '../utils/router'
+import { useSession } from '../services/session'
+import { actions, useStore, timeAgo, type Topic } from '../services/store'
+import { Fold } from '../components/Bits'
+import { Divider, Sym } from '../components/Symbols'
+import { FrameCorners } from '../components/Doodles'
+import { PageHead } from './PlaceholderView'
+import { ReviewQueue, StatusStamp } from './StudioView'
+import { allMotions, allResources, articles } from '../data/sample'
 
 const GUIDE: [string, string][] = [
   [
-    "Reading and finding things",
-    "Everything is free to read without an account. The strip under the header shows the newest motions and essays: hover to stop it, hold to speed it up, click an item to open it.",
+    'Reading and finding things',
+    'Everything is free to read without an account. The strip under the header shows the newest motions and essays: hover to stop it, hold to speed it up, click an item to open it.',
   ],
   [
-    "Motions and the prep timer",
+    'Motions and the prep timer',
     'On Motions, filter by format, search by topic, or pick a day on the calendar (days with a gold dot have new motions). "Draw a random motion" deals you one; "Start prep" runs a 7, 15 or 30 minute countdown.',
   ],
   [
-    "Resources and the Glossary",
-    "Resources are filed like catalogue cards: choose a drawer to narrow them. The Glossary explains debate terms in English and Urdu.",
+    'Resources and the Glossary',
+    'Resources are filed like catalogue cards: choose a drawer to narrow them. The Glossary explains debate terms in English and Urdu.',
   ],
+  ['The Floor', 'Two rooms. Open Floor has one prompt each week, where you can reply For, Against or Unsure. Article Discussions has one thread per essay.'],
   [
-    "The Floor",
-    "Two rooms. Open Floor has one prompt each week, where you can reply For, Against or Unsure. Article Discussions has one thread per essay.",
+    'The Forum',
+    'For longer conversations. Pick a board (Motions & prep, Tournaments, Urdu debate, Judging, Clubs & coaching, The lounge) and start a thread with a title and a post, or reply to someone else\u2019s. Editors and owners can pin a thread to the top or lock it. You get a notice when someone replies to your thread.',
   ],
+  ['Replying and editing', 'Sign in to reply. You can edit or delete your own replies at any time; edited replies are marked as edited.'],
+  ['Your dashboard', 'Once signed in, "My Dashboard" appears beside the logo. It lists what you liked, what you saved and what you wrote.'],
   [
-    "The Forum",
-    "For longer conversations. Pick a board (Motions & prep, Tournaments, Urdu debate, Judging, Clubs & coaching, The lounge) and start a thread with a title and a post, or reply to someone else\u2019s. Editors and owners can pin a thread to the top or lock it. You get a notice when someone replies to your thread.",
+    'Writing an essay',
+    'Open the writing studio from your dashboard or the Articles page. It saves as you type. When you send it, an owner approves it or returns it with a note.',
   ],
+  ['Search', 'Press Ctrl+K (or the magnifier in the header) to search essays, motions, resources, glossary terms and forum threads at once.'],
   [
-    "Replying and editing",
-    "Sign in to reply. You can edit or delete your own replies at any time; edited replies are marked as edited.",
+    'What gets moderated',
+    'Insults and abusive language are stopped before posting. Argue the point, not the person. Anything held is reviewed by an owner, not silently deleted.',
   ],
-  [
-    "Your dashboard",
-    'Once signed in, "My Dashboard" appears beside the logo. It lists what you liked, what you saved and what you wrote.',
-  ],
-  [
-    "Writing an essay",
-    "Open the writing studio from your dashboard or the Articles page. It saves as you type. When you send it, an owner approves it or returns it with a note.",
-  ],
-  [
-    "Search",
-    "Press Ctrl+K (or the magnifier in the header) to search essays, motions, resources, glossary terms and forum threads at once.",
-  ],
-  [
-    "What gets moderated",
-    "Insults and abusive language are stopped before posting. Argue the point, not the person. Anything held is reviewed by an owner, not silently deleted.",
-  ],
-];
+]
 
 export function AboutView() {
   return (
@@ -68,10 +56,8 @@ export function AboutView() {
           <FrameCorners />
           <h2 className="text-2xl font-bold">Our mission</h2>
           <p className="measure mt-3 text-[1.0625rem] leading-[1.8]">
-            Ramz-e-Fikr is an open archive of debate resources, kept by
-            students. We collect motions, write guides and publish essays so
-            that anyone, in any city and at any school, can learn to turn a
-            thought into an argument.
+            Ramz-e-Fikr is an open archive of debate resources, kept by students. We collect motions, write guides and publish essays so that anyone, in any
+            city and at any school, can learn to turn a thought into an argument.
           </p>
           <p className="urdu mt-4 text-2xl text-oxblood" lang="ur">
             جہاں سوچ دلیل بنتی ہے۔
@@ -91,11 +77,9 @@ export function AboutView() {
               {GUIDE.map(([q, a], i) => (
                 <Fold
                   key={q}
-                  index={String(i + 1).padStart(2, "0")}
+                  index={String(i + 1).padStart(2, '0')}
                   defaultOpen={i === 0}
-                  summary={
-                    <span className="font-display text-lg font-bold">{q}</span>
-                  }
+                  summary={<span className="font-display text-lg font-bold">{q}</span>}
                 >
                   <p className="measure text-charcoal">{a}</p>
                 </Fold>
@@ -110,18 +94,9 @@ export function AboutView() {
           <h2 className="text-2xl font-bold">Roles, explained</h2>
           <dl className="mt-4 grid gap-4 sm:grid-cols-3">
             {[
-              [
-                "Member",
-                "Replies, likes, saves, and can submit an essay for review.",
-              ],
-              [
-                "Editor",
-                "Everything a member can do, plus writing and drafting essays.",
-              ],
-              [
-                "Owner",
-                "Approves essays and looks after moderation and the team.",
-              ],
+              ['Member', 'Replies, likes, saves, and can submit an essay for review.'],
+              ['Editor', 'Everything a member can do, plus writing and drafting essays.'],
+              ['Owner', 'Approves essays and looks after moderation and the team.'],
             ].map(([r, d]) => (
               <div key={r} className="border-t-2 border-oxblood pt-3">
                 <dt className="label !font-bold !text-ink">{r}</dt>
@@ -132,16 +107,11 @@ export function AboutView() {
         </Reveal>
       </div>
     </>
-  );
+  )
 }
 
 export function DeskView() {
-  const steps = [
-    "You send a draft",
-    "An editor reads it",
-    "An owner approves or returns it with a note",
-    "It is published with your name",
-  ];
+  const steps = ['You send a draft', 'An editor reads it', 'An owner approves or returns it with a note', 'It is published with your name']
   return (
     <>
       <PageHead
@@ -155,32 +125,28 @@ export function DeskView() {
         <Reveal>
           <h2 className="text-2xl font-bold">Masthead</h2>
           <p className="meta mt-1">Vol. I · 2026 · Lahore · Faisalabad</p>
-          <p className="measure mt-3">
-            The Publication Team edits every essay and guide on this site. Names
-            are added here once the three owners are set.
-          </p>
+          <p className="measure mt-3">The Publication Team edits every essay and guide on this site. Names are added here once the three owners are set.</p>
         </Reveal>
         <Divider className="my-10" />
         <section id="submit" className="scroll-mt-32">
           <Reveal>
             <h2 className="text-2xl font-bold">Submit an essay</h2>
             <p className="measure mt-3">
-              We take essays of 600 to 1,500 words on debating, argument and
-              public reasoning, in English or Urdu. Lead with one clear idea: it
-              becomes the essay's “Latest Ramz”.
+              We take essays of 600 to 1,500 words on debating, argument and public reasoning, in English or Urdu. Lead with one clear idea: it becomes the
+              essay's “Latest Ramz”.
             </p>
             <ol className="mt-6 grid gap-4 sm:grid-cols-4">
               {steps.map((s, i) => (
                 <li key={s} className="relative border-t border-ink/70 pt-3">
                   <span className="numeral block text-4xl" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
+                    {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="mt-2 block text-[0.9375rem]">{s}</span>
                 </li>
               ))}
             </ol>
             <Link to="/write" className="btn btn-primary mt-6">
-              Open the writing studio{" "}
+              Open the writing studio{' '}
               <span aria-hidden="true" className="arrow">
                 ⟶
               </span>
@@ -191,11 +157,7 @@ export function DeskView() {
         <Reveal>
           <h2 className="text-2xl font-bold">Editorial standards</h2>
           <ul className="mt-3 space-y-2">
-            {[
-              "Claims carry sources.",
-              "The strongest version of the other side is stated fairly.",
-              "Corrections are marked with a † and dated.",
-            ].map((s) => (
+            {['Claims carry sources.', 'The strongest version of the other side is stated fairly.', 'Corrections are marked with a † and dated.'].map((s) => (
               <li key={s} className="flex gap-3">
                 <Sym name="hand" />
                 <span>{s}</span>
@@ -205,126 +167,82 @@ export function DeskView() {
         </Reveal>
       </div>
     </>
-  );
+  )
 }
 
 function titleFor(key: string, topics: Topic[]): { label: string; to: string } {
-  const [kind, slug] = key.split(":");
-  if (kind === "forum")
+  const [kind, slug] = key.split(':')
+  if (kind === 'forum')
     return {
-      label: topics.find((t) => t.id === slug)?.title ?? "A forum thread",
+      label: topics.find((t) => t.id === slug)?.title ?? 'A forum thread',
       to: `/forum/${slug}`,
-    };
-  if (kind === "article")
+    }
+  if (kind === 'article')
     return {
       label: articles.find((a) => a.slug === slug)?.title ?? slug,
       to: `/articles/${slug}`,
-    };
-  if (kind === "motion")
+    }
+  if (kind === 'motion')
     return {
       label: allMotions.find((m) => m.slug === slug)?.text ?? slug,
-      to: "/motions",
-    };
+      to: '/motions',
+    }
   return {
     label: allResources.find((r) => r.slug === slug)?.title ?? slug,
-    to: "/resources",
-  };
+    to: '/resources',
+  }
 }
 
 export function DashboardView() {
-  const { user, ready, signOut } = useSession();
-  const store = useStore();
+  const { user, ready, signOut } = useSession()
+  const store = useStore()
 
-  if (!ready)
-    return (
-      <PageHead
-        info
-        symbol="fe"
-        title="My Dashboard"
-        purpose="Checking who is signed in…"
-      />
-    );
+  if (!ready) return <PageHead info symbol="fe" title="My Dashboard" purpose="Checking who is signed in…" />
   if (!user)
     return (
       <>
-        <PageHead
-          info
-          symbol="fe"
-          title="My Dashboard"
-          purpose="Your activity, likes, saves and replies in one place."
-        />
+        <PageHead info symbol="fe" title="My Dashboard" purpose="Your activity, likes, saves and replies in one place." />
         <div className="wrap pt-8">
           <Link to="/signin" className="btn btn-primary">
             Sign in to see your dashboard
           </Link>
         </div>
       </>
-    );
+    )
 
-  const mine = store.posts
-    .filter((p) => p.authorId === user.id)
-    .sort((a, b) => b.at - a.at);
-  const myThreads = store.topics
-    .filter((t) => t.authorId === user.id)
-    .sort((a, b) => b.at - a.at);
-  const Section = ({
-    title,
-    empty,
-    children,
-  }: {
-    title: string;
-    empty: string;
-    children: React.ReactNode[];
-  }) => (
+  const mine = store.posts.filter((p) => p.authorId === user.id).sort((a, b) => b.at - a.at)
+  const myThreads = store.topics.filter((t) => t.authorId === user.id).sort((a, b) => b.at - a.at)
+  const Section = ({ title, empty, children }: { title: string; empty: string; children: React.ReactNode[] }) => (
     <section className="border-t-2 border-oxblood pt-3">
       <h2 className="label !font-bold !text-ink">
         {title} · {children.length}
       </h2>
-      {children.length ? (
-        <ul className="mt-2">{children}</ul>
-      ) : (
-        <p className="meta mt-3">{empty}</p>
-      )}
+      {children.length ? <ul className="mt-2">{children}</ul> : <p className="meta mt-3">{empty}</p>}
     </section>
-  );
+  )
   const row = (key: string) => {
-    const t = titleFor(key, store.topics);
+    const t = titleFor(key, store.topics)
     return (
       <li key={key} className="border-b border-border-warm">
-        <Link
-          to={t.to}
-          className="flex min-h-11 items-center justify-between gap-3 py-2 hover:text-oxblood"
-        >
+        <Link to={t.to} className="flex min-h-11 items-center justify-between gap-3 py-2 hover:text-oxblood">
           <span>{t.label}</span>
           <span className="arrow text-oxblood">⟶</span>
         </Link>
       </li>
-    );
-  };
+    )
+  }
 
   return (
     <>
-      <PageHead
-        info
-        symbol="fe"
-        title="My Dashboard"
-        purpose="Your activity, likes, saves and replies in one place."
-      />
+      <PageHead info symbol="fe" title="My Dashboard" purpose="Your activity, likes, saves and replies in one place." />
       <div className="wrap pt-8">
         <Stick rest={-0.6} className="torn-wrap relative mb-10 max-w-md">
-          <span
-            className="tape -top-2.5 left-8 z-10 -rotate-3"
-            aria-hidden="true"
-          />
+          <span className="tape -top-2.5 left-8 z-10 -rotate-3" aria-hidden="true" />
           <div className="torn bg-ivory px-6 py-7">
             <p className="label">Signed in as</p>
             <p className="font-display text-2xl font-bold">{user.name}</p>
             <p className="meta capitalize">Role · {user.role}</p>
-            <button
-              type="button"
-              onClick={signOut}
-              className="mt-2 min-h-11 font-mono text-[0.8125rem] text-oxblood underline underline-offset-2"
-            >
+            <button type="button" onClick={signOut} className="mt-2 min-h-11 font-mono text-[0.8125rem] text-oxblood underline underline-offset-2">
               Sign out
             </button>
           </div>
@@ -333,33 +251,19 @@ export function DashboardView() {
         {store.notices.length > 0 && (
           <section className="mb-10 border-t-2 border-oxblood pt-3">
             <div className="flex items-center justify-between gap-4">
-              <h2 className="label !font-bold !text-ink">
-                Notices · {store.notices.filter((n) => !n.read).length} new
-              </h2>
-              <button
-                type="button"
-                onClick={actions.markNoticesRead}
-                className="min-h-11 font-mono text-[0.8125rem] text-oxblood underline underline-offset-2"
-              >
+              <h2 className="label !font-bold !text-ink">Notices · {store.notices.filter((n) => !n.read).length} new</h2>
+              <button type="button" onClick={actions.markNoticesRead} className="min-h-11 font-mono text-[0.8125rem] text-oxblood underline underline-offset-2">
                 Mark all read
               </button>
             </div>
             <ul>
               {store.notices.map((n) => (
                 <li key={n.id} className="border-b border-border-warm py-2.5">
-                  <Link
-                    to={n.link ?? "/dashboard"}
-                    className="flex gap-3 hover:text-oxblood"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={n.read ? "text-border-warm" : "text-oxblood"}
-                    >
+                  <Link to={n.link ?? '/dashboard'} className="flex gap-3 hover:text-oxblood">
+                    <span aria-hidden="true" className={n.read ? 'text-border-warm' : 'text-oxblood'}>
                       ●
                     </span>
-                    <span className={n.read ? "text-charcoal" : "font-bold"}>
-                      {n.body}
-                    </span>
+                    <span className={n.read ? 'text-charcoal' : 'font-bold'}>{n.body}</span>
                   </Link>
                   <p className="meta ml-6">{timeAgo(n.at)}</p>
                 </li>
@@ -372,36 +276,25 @@ export function DashboardView() {
           <Section title="Liked" empty="Nothing liked yet.">
             {store.likes.map(row)}
           </Section>
-          <Section
-            title="Saved"
-            empty="Nothing saved yet. Use Save on a motion or resource."
-          >
+          <Section title="Saved" empty="Nothing saved yet. Use Save on a motion or resource.">
             {store.bookmarks.map(row)}
           </Section>
-          <Section
-            title="Your replies"
-            empty="You have not replied anywhere yet."
-          >
+          <Section title="Your replies" empty="You have not replied anywhere yet.">
             {mine.map((p) => (
               <li key={p.id} className="border-b border-border-warm py-2">
                 <Link
                   to={
-                    p.thread.startsWith("forum-")
+                    p.thread.startsWith('forum-')
                       ? `/forum/${p.thread.slice(6)}`
-                      : p.thread.startsWith("article-")
+                      : p.thread.startsWith('article-')
                         ? `/articles/${p.thread.slice(8)}`
-                        : "/floor"
+                        : '/floor'
                   }
                   className="block hover:text-oxblood"
                 >
                   <p className="line-clamp-2 text-[0.9375rem]">{p.text}</p>
                   <p className="meta">
-                    {p.thread.startsWith("forum-")
-                      ? "Forum"
-                      : p.thread.startsWith("article-")
-                        ? "Essay thread"
-                        : "Open Floor"}{" "}
-                    · {timeAgo(p.at)}
+                    {p.thread.startsWith('forum-') ? 'Forum' : p.thread.startsWith('article-') ? 'Essay thread' : 'Open Floor'} · {timeAgo(p.at)}
                   </p>
                 </Link>
               </li>
@@ -410,33 +303,22 @@ export function DashboardView() {
         </div>
 
         <section className="mt-10 border-t-2 border-oxblood pt-3">
-          <h2 className="label !font-bold !text-ink">
-            Your forum threads · {myThreads.length}
-          </h2>
+          <h2 className="label !font-bold !text-ink">Your forum threads · {myThreads.length}</h2>
           <ul className="mt-2">
             {myThreads.map((t) => (
               <li key={t.id} className="border-b border-border-warm">
-                <Link
-                  to={`/forum/${t.id}`}
-                  className="flex min-h-11 flex-wrap items-center justify-between gap-3 py-2.5 hover:text-oxblood"
-                >
-                  <span className="font-display text-lg font-bold">
-                    {t.title}
-                  </span>
+                <Link to={`/forum/${t.id}`} className="flex min-h-11 flex-wrap items-center justify-between gap-3 py-2.5 hover:text-oxblood">
+                  <span className="font-display text-lg font-bold">{t.title}</span>
                   <span className="meta">
-                    {t.flagged ? "held for review · " : ""}
-                    {
-                      store.posts.filter((p) => p.thread === "forum-" + t.id)
-                        .length
-                    }{" "}
-                    replies · {timeAgo(t.at)}
+                    {t.flagged ? 'held for review · ' : ''}
+                    {store.posts.filter((p) => p.thread === 'forum-' + t.id).length} replies · {timeAgo(t.at)}
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
           <Link to="/forum" className="btn btn-ghost mt-4">
-            {myThreads.length ? "Go to the forum" : "Start your first thread"}{" "}
+            {myThreads.length ? 'Go to the forum' : 'Start your first thread'}{' '}
             <span aria-hidden="true" className="arrow">
               ⟶
             </span>
@@ -444,34 +326,26 @@ export function DashboardView() {
         </section>
 
         <section className="mt-10 border-t-2 border-oxblood pt-3">
-          <h2 className="label !font-bold !text-ink">
-            Your essays ·{" "}
-            {store.drafts.filter((d) => d.postedById === user.id).length}
-          </h2>
+          <h2 className="label !font-bold !text-ink">Your essays · {store.drafts.filter((d) => d.postedById === user.id).length}</h2>
           <ul className="mt-2">
             {store.drafts
               .filter((d) => d.postedBy === user.name)
               .map((d) => (
-                <li
-                  key={d.id}
-                  className="flex flex-wrap items-center justify-between gap-3 border-b border-border-warm py-3"
-                >
-                  <span className="font-display text-lg font-bold">
-                    {d.title || "Untitled"}
-                  </span>
+                <li key={d.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border-warm py-3">
+                  <span className="font-display text-lg font-bold">{d.title || 'Untitled'}</span>
                   <StatusStamp status={d.status} />
                 </li>
               ))}
           </ul>
           <Link to="/write" className="btn btn-primary mt-4">
-            Open the writing studio{" "}
+            Open the writing studio{' '}
             <span aria-hidden="true" className="arrow">
               ⟶
             </span>
           </Link>
         </section>
-        {user.role === "owner" && <ReviewQueue />}
+        {user.role === 'owner' && <ReviewQueue />}
       </div>
     </>
-  );
+  )
 }

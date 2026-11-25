@@ -13,6 +13,7 @@ export const NAV = [
   { to: '/motions', label: 'Motions' },
   { to: '/floor', label: 'The Floor' },
   { to: '/forum', label: 'Forum' },
+  { to: '/tab', label: 'Tournaments' },
   { to: '/glossary', label: 'Glossary' },
 ] as const
 
@@ -120,11 +121,12 @@ export default function Navbar() {
         {user && (
           <Link
             to="/dashboard"
-            className="ml-1 inline-flex min-h-11 items-center gap-1.5 border border-oxblood px-2.5 text-[0.8125rem] font-bold text-oxblood transition-transform duration-200 hover:-translate-y-px md:px-3"
+            className="ml-1 inline-flex min-h-11 shrink-0 items-center gap-1.5 border border-oxblood px-2.5 text-[0.8125rem] font-bold whitespace-nowrap text-oxblood transition-transform duration-200 hover:-translate-y-px md:px-3"
           >
             <LayoutDashboard size={15} aria-hidden="true" />
-            <span className="hidden min-[430px]:inline">My Dashboard</span>
-            <span className="min-[430px]:hidden">Dashboard</span>
+            {/* the full label only where there is room beside seven menu links */}
+            <span className="hidden min-[430px]:inline lg:hidden 2xl:inline">My Dashboard</span>
+            <span className="min-[430px]:hidden lg:inline 2xl:hidden">Dashboard</span>
           </Link>
         )}
 
@@ -134,7 +136,7 @@ export default function Navbar() {
               key={n.to}
               to={n.to}
               aria-current={isActive(n.to) ? 'page' : undefined}
-              className={`relative px-2 py-2 text-[0.9375rem] font-medium whitespace-nowrap transition-colors duration-200 xl:px-3 ${
+              className={`relative px-1.5 py-2 text-[0.875rem] font-medium whitespace-nowrap transition-colors duration-200 xl:px-3 xl:text-[0.9375rem] ${
                 isActive(n.to) ? 'text-oxblood' : 'text-ink hover:text-oxblood'
               }`}
             >
@@ -142,7 +144,7 @@ export default function Navbar() {
               {isActive(n.to) && (
                 <motion.span
                   layoutId="nav-underline"
-                  className="absolute inset-x-2 -bottom-0.5 h-0.5 bg-oxblood xl:inset-x-3"
+                  className="absolute inset-x-1.5 -bottom-0.5 h-0.5 bg-oxblood xl:inset-x-3"
                   transition={{ duration: DUR.slow, ease: EASE_SNAP }}
                 />
               )}

@@ -17,7 +17,8 @@ const FAST = 5.5 // multiplier while held
 const RAMP_MS = 90 // time constant: reaches target in about 250ms
 const HOLD_MS = 180 // longer than this is a hold, not a tap
 
-type Item = { key: string; to: string; symbol: SymbolName; text: string; motion?: string }
+export type TickerItem = { key: string; to: string; symbol: SymbolName; text: string; motion?: string }
+type Item = TickerItem
 
 function useItems(): Item[] {
   return useMemo(() => {
@@ -38,13 +39,15 @@ function useItems(): Item[] {
   }, [])
 }
 
-export default function Ticker() {
+/** The site ticker. Pass `items` (and a `label`) to show something else, such as a tournament's announcements. */
+export default function Ticker({ items: given, label }: { items?: Item[]; label?: string } = {}) {
   const reduced = !!useReducedMotion()
-  const items = useItems()
-  return reduced ? <StaticTicker items={items} /> : <FlowTicker items={items} />
+  const site = useItems()
+  const items = given ?? site
+  return reduced ? <StaticTicker items={items} label={label} /> : <FlowTicker items={items} label={label} />
 }
 
-function FlowTicker({ items }: { items: Item[] }) {
+function FlowTicker({ items, label }: { items: Item[]; label?: string }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const state = useRef({ x: 0, v: 1, hover: false, hold: false, focus: false, downAt: 0, wasHold: false })
   const [hint, setHint] = useState(false)
@@ -93,7 +96,7 @@ function FlowTicker({ items }: { items: Item[] }) {
     <div
       className="relative border-b border-ink/80 bg-parchment select-none"
       role="region"
-      aria-label="Latest motions and articles. Hold to speed up."
+      aria-label={`${label ?? 'Latest motions and articles'}. Hold to speed up.`}
       tabIndex={0}
       onPointerEnter={(e) => {
         if (e.pointerType === 'mouse') {
@@ -183,21 +186,12 @@ function FlowTicker({ items }: { items: Item[] }) {
   )
 }
 
-function StaticTicker({ items }: { items: Item[] }) {
+function StaticTicker({ items, label }: { items: Item[]; label?: string }) {
   const ref = useRef<HTMLUListElement>(null)
   const step = (dir: 1 | -1) => ref.current?.scrollBy({ left: dir * 280 })
   return (
-    <div
-      className="flex items-center border-b border-ink/80 bg-parchment"
-      role="region"
-      aria-label="Latest motions and articles"
-    >
-      <button
-        type="button"
-        onClick={() => step(-1)}
-        aria-label="Previous items"
-        className="grid h-11 w-11 shrink-0 place-items-center"
-      >
+    <div className="flex items-center border-b border-ink/80 bg-parchment" role="region" aria-label={label ?? 'Latest motions and articles'}>
+      <button type="button" onClick={() => step(-1)} aria-label="Previous items" className="grid h-11 w-11 shrink-0 place-items-center">
         <ChevronLeft size={18} />
       </button>
       <ul ref={ref} className="flex flex-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
@@ -210,12 +204,7 @@ function StaticTicker({ items }: { items: Item[] }) {
           </li>
         ))}
       </ul>
-      <button
-        type="button"
-        onClick={() => step(1)}
-        aria-label="Next items"
-        className="grid h-11 w-11 shrink-0 place-items-center"
-      >
+      <button type="button" onClick={() => step(1)} aria-label="Next items" className="grid h-11 w-11 shrink-0 place-items-center">
         <ChevronRight size={18} />
       </button>
     </div>

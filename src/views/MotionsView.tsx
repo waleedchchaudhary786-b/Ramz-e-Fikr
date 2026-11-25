@@ -52,20 +52,38 @@ export default function MotionsView() {
     return allMotions.find((m) => m.slug === slug) ?? allMotions[0]
   })
 
+  // motions from finished Ramz Tab tournaments join the archive, tagged with the event's name
+  const [fromEvents, setFromEvents] = useState<Motion[]>([])
+  useEffect(() => {
+    let alive = true
+    void import('../tab/backend')
+      .then((m) => m.tab.archiveMotions())
+      .then((ms) => {
+        if (!alive) return
+        setFromEvents(ms.map((x) => ({ slug: x.slug, text: x.motion, format: x.format === 'URDU' ? 'Bilingual' : x.format, theme: x.event, date: x.date })))
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+  const all = useMemo(() => [...fromEvents, ...allMotions].sort((a, b) => b.date.localeCompare(a.date)), [fromEvents])
+
   const list = useMemo(
     () =>
-      allMotions.filter(
+      all.filter(
         (m) =>
-          (format === 'All' || m.format === format) &&
-          (!date || m.date === date) &&
-          (!q || (m.text + ' ' + m.theme).toLowerCase().includes(q.toLowerCase())),
+          (format === 'All' || m.format === format) && (!date || m.date === date) && (!q || (m.text + ' ' + m.theme).toLowerCase().includes(q.toLowerCase())),
       ),
-    [format, date, q],
+    [format, date, q, all],
   )
 
   return (
     <>
-      <PageHead symbol="pilcrow" title="Motions" purpose="A bank of motions to practise on, with a random draw and a prep timer."
+      <PageHead
+        symbol="pilcrow"
+        title="Motions"
+        purpose="A bank of motions to practise on, with a random draw and a prep timer."
         note="Draw one. Fifteen minutes. On your feet."
       />
       <div className="wrap grid gap-12 lg:grid-cols-12">
@@ -73,20 +91,14 @@ export default function MotionsView() {
           <div className="flex flex-col gap-3">
             <label className="block">
               <span className="label">Search</span>
-              <input
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="smog, schools, unions…"
-                className="paper-input mt-1"
-              />
+              <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="smog, schools, unions…" className="paper-input mt-1" />
             </label>
             <Filter label="Format" options={FORMATS} value={format} onChange={setFormat} />
             <div className="flex items-center gap-3">
               <span className="label">Added on</span>
               <DateFilter
                 value={date}
-                marked={allMotions.map((m) => m.date)}
+                marked={all.map((m) => m.date)}
                 onChange={(d) => {
                   setDate(d)
                   writeDate(d)
@@ -144,9 +156,7 @@ export default function MotionsView() {
               ))}
             </AnimatePresence>
           </ol>
-          {list.length === 0 && (
-            <p className="mt-6 font-display text-xl italic">Nothing matches. Clear a filter and try again.</p>
-          )}
+          {list.length === 0 && <p className="mt-6 font-display text-xl italic">Nothing matches. Clear a filter and try again.</p>}
         </div>
 
         <aside className="lg:col-span-5" id="prep" aria-label="Prep desk">
@@ -213,13 +223,13 @@ function DrawStage({ motion: m, drawNo, phase }: { motion: Motion; drawNo: numbe
         >
           {/* .index-card sets its own position, so it sits inside an absolutely placed face */}
           <div className="absolute inset-0 [backface-visibility:hidden]" aria-live="polite">
-          <div className="index-card h-full overflow-hidden px-5 pt-2.5" style={{ transform: 'none' }}>
-            <p className="flex items-baseline justify-between font-mono text-xs tracking-[0.12em] uppercase">
-              <span className="text-oxblood">{m.format}</span>
-              <span className="text-charcoal">{m.theme}</span>
-            </p>
-            <p className="mt-5 line-clamp-4 font-display text-[1.3125rem] leading-snug font-bold">{m.text}</p>
-          </div>
+            <div className="index-card h-full overflow-hidden px-5 pt-2.5" style={{ transform: 'none' }}>
+              <p className="flex items-baseline justify-between font-mono text-xs tracking-[0.12em] uppercase">
+                <span className="text-oxblood">{m.format}</span>
+                <span className="text-charcoal">{m.theme}</span>
+              </p>
+              <p className="mt-5 line-clamp-4 font-display text-[1.3125rem] leading-snug font-bold">{m.text}</p>
+            </div>
           </div>
           <div className="absolute inset-0 [backface-visibility:hidden]" style={{ transform: 'rotateY(180deg)' }}>
             <CardBack />
@@ -265,7 +275,14 @@ function SpeechTimer() {
     const id = window.setInterval(() => setT((x) => Math.min(SPEECH + 30, x + 1)), 1000)
     return () => window.clearInterval(id)
   }, [on])
-  const state = t < 60 ? 'Protected time: no points' : t < SPEECH - 60 ? 'Points of information are open' : t < SPEECH ? 'Protected time: wrap up' : 'Time. Finish your sentence.'
+  const state =
+    t < 60
+      ? 'Protected time: no points'
+      : t < SPEECH - 60
+        ? 'Points of information are open'
+        : t < SPEECH
+          ? 'Protected time: wrap up'
+          : 'Time. Finish your sentence.'
   const open = t >= 60 && t < SPEECH - 60
   const mm = String(Math.floor(t / 60)).padStart(2, '0')
   const ss = String(t % 60).padStart(2, '0')
@@ -279,11 +296,20 @@ function SpeechTimer() {
         <span className="w-[14.28%] bg-gold" />
         <span className="flex-1 bg-border-warm" />
         <span className="w-[14.28%] bg-gold" />
-        <span className="absolute top-[-4px] bottom-[-4px] left-0 w-full transition-transform duration-1000 ease-linear" style={{ transform: `translateX(${Math.min(1, t / SPEECH) * 100}%)` }}>
+        <span
+          className="absolute top-[-4px] bottom-[-4px] left-0 w-full transition-transform duration-1000 ease-linear"
+          style={{ transform: `translateX(${Math.min(1, t / SPEECH) * 100}%)` }}
+        >
           <span className="block h-full w-[3px] bg-oxblood" />
         </span>
       </div>
-      <motion.p key={state} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={`mt-3 font-display text-lg font-bold ${open ? '' : 'text-oxblood italic'}`} aria-live="polite">
+      <motion.p
+        key={state}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`mt-3 font-display text-lg font-bold ${open ? '' : 'text-oxblood italic'}`}
+        aria-live="polite"
+      >
         {state}
       </motion.p>
       <div className="mt-3 flex gap-2">
@@ -390,7 +416,10 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
               transition={{ duration: reduced ? 0 : 0.9, ease: [0.22, 0.61, 0.36, 1] }}
             >
               <span className="coin-face border-2 border-gold bg-oxblood font-display text-2xl font-black text-ivory">P</span>
-              <span className="coin-face border-2 border-oxblood bg-gold font-display text-2xl font-black text-burgundy" style={{ transform: 'rotateY(180deg)' }}>
+              <span
+                className="coin-face border-2 border-oxblood bg-gold font-display text-2xl font-black text-burgundy"
+                style={{ transform: 'rotateY(180deg)' }}
+              >
                 O
               </span>
             </motion.span>
@@ -422,7 +451,10 @@ function PrepDesk({ chosen, onDraw }: { chosen: Motion; onDraw: (m: Motion) => v
               </p>
               {/* an ink line that drains as time runs out */}
               <div className="mt-2 h-1.5 bg-border-warm" aria-hidden="true">
-                <div className="h-full origin-left bg-oxblood transition-transform duration-1000 ease-linear" style={{ transform: `scaleX(${left / total})` }} />
+                <div
+                  className="h-full origin-left bg-oxblood transition-transform duration-1000 ease-linear"
+                  style={{ transform: `scaleX(${left / total})` }}
+                />
               </div>
               {done && <p className="mt-3 font-display text-xl font-bold text-oxblood italic">Time. On your feet.</p>}
               <div className="mt-4 flex flex-wrap items-center gap-2">

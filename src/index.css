@@ -597,3 +597,51 @@ html {
 @keyframes src-flash { 0% { background: color-mix(in srgb, var(--color-gold) 35%, transparent); } 100% { background: transparent; } }
 .src-flash { animation: src-flash 1.6s ease-out; }
 @media (prefers-reduced-motion: reduce) { .src-flash { animation: none; outline: 2px solid var(--color-gold); } }
+
+/* ---------- Ramz Tab: Urdu, right-to-left ---------- */
+.urdu-ui {
+  font-family: 'Noto Nastaliq Urdu', var(--font-urdu), serif;
+}
+.tab-ur {
+  font-family: 'Noto Nastaliq Urdu', var(--font-urdu), serif;
+  line-height: 2;
+}
+/* Nastaliq is tall: headings, labels and buttons in Urdu use it too, without the
+   letter-spacing and capitals that suit the English mono labels */
+.tab-ur :is(h1, h2, h3, h4, .font-display, .label, .meta, .btn, .hand, button, input, select, textarea, th) {
+  font-family: 'Noto Nastaliq Urdu', var(--font-urdu), serif;
+  letter-spacing: 0;
+  text-transform: none;
+  font-style: normal;
+}
+.tab-ur :is(h1, h2) {
+  line-height: 1.9;
+}
+/* numbers, codes and times stay left to right in Urdu */
+.tab-ur :is(.numeral, code, .tabular-nums, input[type='number'], input[type='date']) {
+  font-family: var(--font-mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* a wide table scrolls inside its own box; it must never stretch the panel around it */
+:is(.tab-en, .tab-ur) :is(.grid, .flex) > * {
+  min-width: 0;
+}
+
+/* ---------- printing results (Print or save as PDF) ---------- */
+@media print {
+  header,
+  footer,
+  nav,
+  .no-print,
+  [aria-label*='Hold to speed up'] {
+    display: none !important;
+  }
+  body::before {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}

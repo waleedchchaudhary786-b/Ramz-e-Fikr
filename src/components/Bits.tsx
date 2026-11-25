@@ -21,7 +21,7 @@ export function Tabs<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div role="tablist" className="flex gap-1 border-b border-ink/70">
+    <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-ink/70 whitespace-nowrap [scrollbar-width:none]">
       {tabs.map((t) => (
         <button
           key={t.value}

@@ -35,6 +35,7 @@ export default function Footer() {
         { to: '/motions', label: 'Motions' },
         { to: '/floor', label: 'The Floor' },
         { to: '/forum', label: 'Forum' },
+        { to: '/tab', label: 'Tournaments' },
         { to: '/glossary', label: 'Glossary' },
       ],
     },

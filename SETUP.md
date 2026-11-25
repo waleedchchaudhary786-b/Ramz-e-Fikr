@@ -31,6 +31,16 @@ It adds the forum's tables and rules and changes nothing else. (A new setup does
 need it, because the same block is inside `schema.sql`.) Until it is run, the Forum page
 shows a short note asking an owner to do this, and the rest of the site works normally.
 
+**Already set up before Ramz Tab (tournaments) existed?** Run `supabase/tab.sql` once in a
+new query, after `forum.sql` if you have not run that yet. It adds the tournament tables,
+the judge and school functions, and switches on live updates for them. It changes nothing
+else and is safe to run again.
+
+Then check live updates are on: in Supabase open **Database > Publications**, open
+`supabase_realtime`, and make sure `tab_public` and `tab_events` are ticked. (The SQL does
+this for you when that publication exists. If live updates are off, screens still refresh
+every 20 seconds.)
+
 ## 3. Set up sign-in emails
 
 1. In Supabase go to **Authentication > Emails** (Email Templates) and open the
@@ -88,6 +98,14 @@ causes are a typo in `.env` or step 2 not having been run.
   can delete it, and its replies go with it. Editors and owners can pin and lock threads.
   Nobody else can reply to a locked thread. Threads with a banned word are held like
   replies. Writers get a notice when someone replies to their thread.
+- Tournaments (Ramz Tab): editors and owners can start an event and become its director.
+  Only an event's directors and the owners can see or change its private data (judge
+  codes, school links, ratings, conflicts, drafts, ballots). The public only ever reads a
+  cleaned copy. Two directors saving at once cannot overwrite each other.
+- Judges have no accounts. Their private code lets them see only their own room and send
+  only their own ballot, and the database checks every score, rank and tie before saving.
+- Each school's private link edits only that school's teams and judges, and stops working
+  once the first round is drawn. Directors can reissue any code or link if it leaks.
 
 ## Putting the site online (GitHub Pages)
 
